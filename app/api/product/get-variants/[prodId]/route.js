@@ -144,11 +144,13 @@ export async function POST(req, { params }) {
               },
             },
           },
+          productId:prodId
         },
       },
       {
         $project: {
           variants: 1,
+          productId:1
         },
       },
     ]);
@@ -157,6 +159,7 @@ export async function POST(req, { params }) {
       {
         message: "Variants fetched successfully",
         variants: variants[0].variants || [],
+         productId: variants[0]?.productId,
         success: true,
       },
       { status: 200 }

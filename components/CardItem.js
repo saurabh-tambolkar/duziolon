@@ -6,7 +6,7 @@ import Link from "next/link";
 
 function CardItem({ product }) {
   return (
-    <Link href={`/products/mens/${product._id}`} className="bg-white shadow-xl border-1 rounded-md">
+    <Link href={`/products/${product.gender}/${product._id}`} className="bg-white shadow-xl border-1 rounded-md">
       <Image
       alt="image"
         src={product?.image?.url}
@@ -33,7 +33,7 @@ function CardItem({ product }) {
       <h2 className="font-semibold text-sm">{product.name}</h2>
       <div className="flex mt-4 mb-4"> 
         <IndianRupee className="size-4" />
-      <h2 className="font-semibold text-xl">{product.sizes[0].price}</h2>
+      <h2 className="font-semibold text-xl">{product.sizes[0]?.price || "Not added yet!"}</h2>
       </div>
       <h2 className="font-semibold text-sm flex gap-2">FREE delivery Tomorrow 8 am - 12 pm</h2>
       </div>

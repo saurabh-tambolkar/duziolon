@@ -19,6 +19,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {toast} from "sonner"
+
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -62,46 +71,22 @@ const formSchema = z.object({
   gender: z.string(),
 })
 
-const data2 = [
-  {
-    id: "m5gr84i9",
-    amount: 316,
-    status: "success",
-    email: "ken99@example.com",
-  },
-  {
-    id: "3u1reuv4",
-    amount: 242,
-    status: "success",
-    email: "Abe45@example.com",
-  },
-  {
-    id: "derv1ws0",
-    amount: 837,
-    status: "processing",
-    email: "Monserrat44@example.com",
-  },
-  {
-    id: "5kma53ae",
-    amount: 874,
-    status: "success",
-    email: "Silas22@example.com",
-  },
-  {
-    id: "bhqecj4p",
-    amount: 721,
-    status: "failed",
-    email: "carmella@example.com",
-  },
-]
+
 
 export const columns = [
   {
     accessorKey: "image",
     header: "",
-    cell: ({ row }) => (
-      <img src={row.getValue('image')} className="h-15 w-15 object-contain"/>
-    ),
+    cell: ({ row }) => {
+      let src = row.getValue("image")
+      return(
+        
+          src ?
+          <img src={src} className="h-15 w-15 object-contain"/>
+          :
+          <p className="font-semibold">No Image</p>
+      )
+    },
   },
   {
     accessorKey: "name",
@@ -210,6 +195,7 @@ export default function DataTableDemo() {
 
   const [loading,setLoading] = useState(false)
     const [data,setData] = useState([])
+    const [cats,setCats] = useState([])
     const [isSubmitting, setIsSubmitting] = useState(false)
 
      const getProducts = async () => {
@@ -226,9 +212,24 @@ export default function DataTableDemo() {
           setLoading(false)
         }
       }
+     const getCategories = async () => {
+        try {
+          setLoading(true)
+          const res = await axios.post(
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/categories`
+          )
+          console.log(res.data.products)
+          if (res.data.success) setCats(res.data.categories)
+        } catch (err) {
+          console.error(err)
+        } finally {
+          setLoading(false)
+        }
+      }
 
       React.useEffect(()=>{
         getProducts();
+        getCategories();
       },[])
 
   const table = useReactTable({
@@ -264,6 +265,22 @@ export default function DataTableDemo() {
 
   const onSubmit = async (value) => {
     console.log(value)
+    try {
+      setIsSubmitting(true);
+     
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/create-product`,
+        value,
+      );
+      if (response.data.success) {
+        toast.success(response.data.message);
+        getProducts();
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -315,6 +332,7 @@ export default function DataTableDemo() {
         
                     <Form {...form}>
                       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4" >
+                       
                         <FormField
                           control={form.control}
                           name="name"
@@ -322,12 +340,83 @@ export default function DataTableDemo() {
                             <FormItem>
                               <FormLabel>Name</FormLabel>
                               <FormControl>
-                                <Input {...field}  />
+                                <Input {...field} placeholder="Enter name" />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
                           )}
                         />
+                        <FormField
+                          control={form.control}
+                          name="description"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Description</FormLabel>
+                              <FormControl>
+                                <Input {...field} placeholder="Enter description" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                         <FormField
+                                    control={form.control}
+                                    name="category"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>Category</FormLabel>
+                                        <Select
+                                          onValueChange={field.onChange}
+                                          defaultValue={field.value}
+                                        >
+                                          <FormControl>
+                                            <SelectTrigger>
+                                              <SelectValue placeholder="Select a category" />
+                                            </SelectTrigger>
+                                          </FormControl>
+                        
+                                          <SelectContent>
+                                            {
+                                              cats && cats.length > 0 &&
+                                              cats.map((item)=>{
+                                                return(
+                                                  <SelectItem value={item._id}>{item.category}</SelectItem>
+                                                )
+                                              })
+                                            }
+                                          </SelectContent>
+                                        </Select>
+                        
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+                          <FormField
+                                      control={form.control}
+                                      name="gender"
+                                      render={({ field }) => (
+                                        <FormItem>
+                                          <FormLabel>Gender</FormLabel>
+                                          <Select
+                                            onValueChange={field.onChange}
+                                            defaultValue={field.value}
+                                          >
+                                            <FormControl>
+                                              <SelectTrigger>
+                                                <SelectValue placeholder="Select Gender" />
+                                              </SelectTrigger>
+                                            </FormControl>
+                          
+                                            <SelectContent>
+                                              <SelectItem value="womens">Womens</SelectItem>
+                                              <SelectItem value="mens">Mens</SelectItem>
+                                            </SelectContent>
+                                          </Select>
+                          
+                                          <FormMessage />
+                                        </FormItem>
+                                      )}
+                                    />
         
                         <DialogFooter>
                           <DialogClose asChild>

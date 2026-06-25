@@ -47,7 +47,7 @@ export default function Page() {
             <Loader2 className="animate-spin"/>
         </div>
         :
-    <section className="text-gray-600 body-font overflow-hidden pt-12">
+    <section className="text-gray-600 body-font overflow-hidden pt-12 min-h-screen flex justify-center items-center">
       <div className="container px-5 py-24 mx-auto">
         <div className="lg:w-4/5 mx-auto flex flex-wrap">
             
@@ -58,7 +58,7 @@ export default function Page() {
                     return(
                         <img
                         key={img.url}
-                        onClick={()=>setSelectedImage(img.url)}
+                        onMouseOver={()=>setSelectedImage(img.url)}
                           alt="ecommerce"
                           className={ ` ${selectedImage == img.url && "border-2 border-black"} md:w-full w-1/4 md:h-20 h-20 object-contain object-center rounded border-1`}
                           src={img.url || null}
@@ -75,8 +75,8 @@ export default function Page() {
           />
             </div>  
 
-          <div className="lg:w-1/2 w-full lg:pl-10 lg:py-6 mt-6 lg:mt-0">
-            
+          <div className="lg:w-1/2 justify-between flex flex-col w-full lg:pl-10 lg:py-6 mt-6 lg:mt-0">
+          <div>
             <h2 className="text-sm title-font text-gray-500 tracking-widest">
               DUZIOLON
             </h2>
@@ -120,11 +120,16 @@ export default function Page() {
               </span>
             </div>
 
-            <p className="leading-relaxed">Fam locavore kickstarter distillery. Mixtape chillwave tumeric sriracha taximy chia microdosing tilde DIY. XOXO fam indxgo juiceramps cornhole raw denim forage brooklyn. Everyday carry +1 seitan poutine tumeric. Gastropub blue bottle austin listicle pour-over, neutra jean shorts keytar banjo tattooed umami cardigan.</p>
-        
+            {/* <p className="leading-relaxed">Fam locavore kickstarter distillery. Mixtape chillwave tumeric sriracha taximy chia microdosing tilde DIY. XOXO fam indxgo juiceramps cornhole raw denim forage brooklyn. Everyday carry +1 seitan poutine tumeric. Gastropub blue bottle austin listicle pour-over, neutra jean shorts keytar banjo tattooed umami cardigan.</p> */}
+                <p>{data?.description}</p>
+          </div>
+            
+
+
+                <div>
 
             {/* Color + Size */}
-            <div className="flex mt-6 items-center justify-between pb-5 border-b-2 border-gray-100 mb-5">
+            <div className="flex  mt-6 items-center justify-between pb-5 border-b-2 border-gray-100 mb-5">
               
               {/* Colors */}
               <div className="flex">
@@ -192,6 +197,7 @@ export default function Page() {
                 </svg>
               </button> */}
             </div>
+                </div>
 
           </div>
         </div>

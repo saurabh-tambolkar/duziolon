@@ -5,6 +5,7 @@ import Categories from "../../../models/CategoriesModel";
 export async function POST(req,res){
     try {
         await ConnectDb();
+        console.log("hello")
         let categories = await Categories.aggregate([
             {
                 $match:{isActive:true}

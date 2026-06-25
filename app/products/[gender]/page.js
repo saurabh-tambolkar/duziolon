@@ -4,7 +4,8 @@ export const revalidate = 60; // cache for 60 seconds
 
 export default async function Page({params}) {
   let {gender} = await params;
-  console.log(gender)
+  console.log("this is gender here ",gender)
+  console.log(process.env.NEXT_PUBLIC_API_BASE_URL);
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/products/${gender}`,
     {
@@ -12,7 +13,6 @@ export default async function Page({params}) {
       cache: "no-cache",
     }
   );
-
   const data = await res.json();
 
   return (

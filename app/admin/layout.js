@@ -1,13 +1,33 @@
 // app/admin/layout.js
 "use client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import {useUser} from "../context/AuthContext"
+import { useEffect } from "react";
 
    // only if you're using useState, useEffect, context, etc.
 
 export default function AdminLayout({ children }) {
 
     let url = usePathname();
+
+    const {currentUser,loadingAuth} = useUser();
+
+     const router = useRouter();
+
+    useEffect(()=>{
+      if(loadingAuth){
+
+      }
+      else if(!currentUser){
+        router.replace('/')
+      }
+      else if(currentUser && currentUser.role !== "Admin"){
+          router.replace("/");
+      }
+    },[currentUser,router])
+
+    console.log('admin layout')
 
   return (
     <div className="min-h-screen flex ">

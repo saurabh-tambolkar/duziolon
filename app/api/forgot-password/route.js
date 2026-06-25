@@ -24,6 +24,7 @@ export async function POST(req,res) {
             }
             let token = jwt.sign(data,jwtSecretKey,{expiresIn:"10m"})
             let url = `/reset-password/${token}`
+            console.log(url)
             return NextResponse.json({message:"Reset password link has been sent to mail.",url,success:true},{status:200})
         }
 

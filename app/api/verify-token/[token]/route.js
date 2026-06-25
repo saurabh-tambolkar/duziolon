@@ -36,6 +36,7 @@ export async function GET(req, { params }) {
     const userId = decoded.user.id;
 
     const verifiedUser = await User.findById(userId).lean();
+    // console.log("verifiedUser",verifiedUser)
     if (!verifiedUser) {
       return NextResponse.json(
         { message: "User not found", success: false },
@@ -54,6 +55,8 @@ export async function GET(req, { params }) {
     const userDetails = {
       _id: verifiedUser._id,
       email: verifiedUser.email,
+      name: verifiedUser.name,
+      role: verifiedUser.role,
       mobileNumber: verifiedUser.mobileNumber,
       profileImage: verifiedUser.profileImage,
     };
