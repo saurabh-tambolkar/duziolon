@@ -3,18 +3,33 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { usePathname } from "next/navigation";
-import { CircleUserRound, Handbag, HandbagIcon, Menu, User, User2Icon, X } from "lucide-react";
+import {
+  CircleUserRound,
+  Handbag,
+  HandbagIcon,
+  Menu,
+  User,
+  User2Icon,
+  X,
+} from "lucide-react";
 import { useUser } from "@/app/context/AuthContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBagShopping, faUser } from "@fortawesome/free-solid-svg-icons";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import { Separator } from "./ui/separator";
+import {  optionsProfUser,optionsProfAdmin,navOptions } from "@/lib/navRoutes"
 
 function Navbar() {
-  const url = usePathname().replace("/", "");
+  const url = usePathname()
 
   const [blur, setBlur] = useState(false);
   const [menuIsOpen, setMenuIsOpen] = useState(false);
 
-  const {currentUser,logout} = useUser()
+  const { currentUser, logout } = useUser();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,6 +39,24 @@ function Navbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // let optionsProfUser = [
+  //   {
+  //     name: "Profile",
+  //     path: "/profile",
+  //   },
+  //   {
+  //     name: "Wishlist",
+  //     path: "/wishlist",
+  //   },
+  //   {
+  //     name: "Settings",
+  //     path: "/settings",
+  //   },
+  // ];
+  
+
+  let optionsProf = currentUser && currentUser?.role == "Admin" ? optionsProfAdmin : optionsProfUser
 
   return (
     <nav
@@ -39,56 +72,65 @@ function Navbar() {
       </h1>
 
       <div className=" hidden  md:flex gap-8">
-        {/* Home */}
-        <Link
-          href="/"
-          className={url === "" ? "border-b-2 border-b-gray-950 font-bold" : ""}
-        >
-          Home
-        </Link>
+        {navOptions.map((item) => {
+          let href =item.path;
+          // href = href.replace("/","")
 
-        {/* Wearables */}
-        <Link
-          href="/products/mens"
-          className={
-            url.includes("/mens")
-              ? "border-b-2 border-b-gray-950 font-bold"
-              : ""
-          }
-        >
-          Mens
-        </Link>
+          const isActive = url == href;
 
-        {/* Accessories */}
-        <Link
-          href="/products/womens"
-          className={
-            url.includes("/womens")
-              ? "border-b-2 border-b-gray-950 font-bold"
-              : ""
-          }
-        >
-          Womens
-        </Link>
-        {/* <Link
-          href="/accessories"
-          className={url === "accessories" ? "border-b-2 border-b-gray-950 font-bold" : ""}
-        >
-          Accessories
-        </Link> */}
-      </div>
-        {
-          currentUser ?
-          <div className="flex items-center gap-8">
-            <Handbag size={24} onClick={logout}/>
-            <Link href={'/profile'}>
-            <CircleUserRound size={24}/>
+          return (
+            <Link
+              key={item.name}
+              href={href}
+              className={
+                isActive ? "border-b-2 border-b-gray-950 font-bold" : ""
+              }
+            >
+              {item.name}
             </Link>
-            </div>
-            :
-            <Button>
-              <Link href={'/sign-in'}>Sign In</Link></Button>
-        }
+          );
+        })}
+      </div>
+      {currentUser ? (
+        <div className="flex items-center gap-8">
+          <Link href="/bag">
+          <Handbag size={24} />
+          </Link>
+
+          <HoverCard openDelay={10} closeDelay={100}>
+            <HoverCardTrigger asChild>
+              <CircleUserRound size={24} />
+            </HoverCardTrigger>
+            <HoverCardContent className="flex w-auto flex-col gap-3">
+              <div className="font-bold p-1">
+                Hello, {currentUser?.name?.split(" ")[0] || "User"}
+              </div>
+              <Separator />
+              <div className="flex flex-col gap-1">
+                {optionsProf &&
+                  optionsProf.map((item) => {
+                    return (
+                      <Link key={item.name} href={item.path}>
+                        <p className="font-semibold">{item.name}</p>
+                      </Link>
+                    );
+                  })}
+              </div>
+              <Separator />
+              <Button
+                className="bg-red-500 font-bold hover:bg-red-400"
+                onClick={logout}
+              >
+                Logout
+              </Button>
+            </HoverCardContent>
+          </HoverCard>
+        </div>
+      ) : (
+        <Button className="hidden md:block">
+          <Link href={"/sign-in"}>Sign In</Link>
+        </Button>
+      )}
 
       <div className="flex gap-4 md:hidden">
         {menuIsOpen ? (
@@ -151,8 +193,18 @@ function Navbar() {
           >
             Accessories
           </Link> */}
-          <User className="text-red bg-red-500 size-4"/>
-          
+          {currentUser ? (
+            <div className="flex flex-col items-center gap-8">
+              <Handbag size={24} onClick={logout} />
+              <Link className="-mt-4" href={"/profile"}>
+                <User size={24} />
+              </Link>
+            </div>
+          ) : (
+            <Button className="block">
+              <Link href={"/sign-in"}>Sign In</Link>
+            </Button>
+          )}
         </div>
       </div>
     </nav>

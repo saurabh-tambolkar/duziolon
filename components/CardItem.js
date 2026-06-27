@@ -5,6 +5,7 @@ import { Button } from "./ui/button";
 import Link from "next/link";
 
 function CardItem({ product }) {
+
   return (
     <Link href={`/products/${product.gender}/${product._id}`} className="bg-white shadow-xl border-1 rounded-md">
       <Image

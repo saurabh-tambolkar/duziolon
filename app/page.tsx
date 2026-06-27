@@ -6,9 +6,9 @@ import {MoveRight} from "lucide-react"
 
 function page() {
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-white min-h-screen ">
       <div className="grid grid-cols-1 md:grid-cols-2 h-screen  pr-4 pl-4 md:pr-16 md:pl-24">
-        <div className="flex flex-col  justify-center space-y-8">
+        <div className="flex flex-col justify-center space-y-8 pt-24">
           <h1 className="text-5xl md:text-7xl font-bold">
             The Look You Want. The Price You’ll Love.
           </h1>
@@ -24,8 +24,8 @@ function page() {
           <Button className="w-1/2 md:w-1/4">Shop Now <MoveRight className="text-white" /></Button>
         </div>
 
-        <div className="hidden md:flex md:flex-col md:items-center md:justify-center md:grid md:grid-cols-2 md:gap-4 md:overflow-hidden">
-          <div className=" flex flex-col justify-baseline items-end  gap-4 ">
+        <div className=" block gap-4 md:flex md:flex-col md:items-center md:justify-center md:grid md:grid-cols-2 md:gap-4 md:overflow-hidden mb-12 md:mb-0">
+          <div className="hidden md:flex md:flex-col justify-baseline items-end  gap-4 overflow-x-scroll w-full">
             <Image
               src={
                 "https://images.pexels.com/photos/1557843/pexels-photo-1557843.jpeg?_gl=1*27amox*_ga*OTU4MzkzMjUuMTc2MzI5NTM5Ng..*_ga_8JE65Q40S6*czE3NjMyOTUzOTYkbzEkZzEkdDE3NjMyOTcyMzYkajU1JGwwJGgw"
@@ -54,7 +54,7 @@ function page() {
               className="w-1/2 rounded-lg"
             />
           </div>
-          <div className="flex flex-col justify-center items-start gap-4 -mt-50">
+          <div className="flex mt-12 md:mt-0 flex-row md:flex-col justify-center items-start gap-4 md:-mt-50 overflow-x-scroll w-full">
             <Image
               src={
                 "https://images.pexels.com/photos/965324/pexels-photo-965324.jpeg?_gl=1*th4lve*_ga*OTU4MzkzMjUuMTc2MzI5NTM5Ng..*_ga_8JE65Q40S6*czE3NjMzMDY0MjEkbzIkZzEkdDE3NjMzMDY1ODQkajYwJGwwJGgw"

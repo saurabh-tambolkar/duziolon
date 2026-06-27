@@ -65,9 +65,9 @@ export default function PrivateLayout({ children }) {
   //   }
   // }, [currentUser, loadingAuth, router]);
 
-  if (loadingAuth) {
-    return <div>Loading...</div>;
-  }
+  // if (loadingAuth) {
+  //   return <div>Loading...</div>;
+  // }
 
   if (currentUser) {
     return null;

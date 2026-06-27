@@ -16,25 +16,24 @@ export default function AdminLayout({ children }) {
      const router = useRouter();
 
     useEffect(()=>{
+      // console.log("admin",loadingAuth,currentUser)
       if(loadingAuth){
 
       }
-      else if(!currentUser){
+      else if(!loadingAuth && !currentUser){
         router.replace('/')
       }
       else if(currentUser && currentUser.role !== "Admin"){
           router.replace("/");
       }
-    },[currentUser,router])
-
-    console.log('admin layout')
+    },[currentUser,router,loadingAuth])
 
   return (
     <div className="min-h-screen flex ">
       {/* Admin Sidebar / Navbar / Wrapper */}
       {/* <header>Admin Header</header> */}
       <div className="w-80 bg-slate-900 text-white p-8">
-        <h1 className="font-bold text-xl">DUZIOLON</h1>
+        <h1 className="font-bold text-xl cursor-pointer" onClick={()=>router.replace("/")}>DUZIOLON</h1>
         <div className="mt-12 space-y-4 flex flex-col">
             <Link href={"/admin/dashboard"} className={`${url.includes('dashboard') && "font-bold bg-white text-black rounded p-1"}`}>Dashboard</Link>
             <Link href={"/admin/products"} className={`${url.includes('products') && "font-bold bg-white text-black rounded p-1"}`}>Products</Link>

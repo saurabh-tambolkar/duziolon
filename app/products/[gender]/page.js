@@ -10,7 +10,7 @@ export default async function Page({params}) {
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/products/${gender}`,
     {
       method: "POST",
-      cache: "no-cache",
+      cache: "force-cache",
     }
   );
   const data = await res.json();

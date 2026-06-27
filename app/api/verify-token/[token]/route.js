@@ -9,7 +9,7 @@ export async function GET(req, { params }) {
 
     // Next.js 15 requires await
     const { token } = await params;
-    console.log("Token:", token);
+    // console.log("Token:", token);
 
     if (!token) {
       return NextResponse.json(
@@ -24,7 +24,7 @@ export async function GET(req, { params }) {
     try {
       // This throws an error if token is expired or invalid
       decoded = jwt.verify(token, jwtSecretKey);
-      console.log(decoded);
+      // console.log(decoded);
     } catch (err) {
       return NextResponse.json(
         { message: "Invalid or expired token", success: false },

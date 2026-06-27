@@ -3,7 +3,9 @@ import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 // import { toast } from "@/components/ui/sonner";
+import {getCookie} from "@/lib/getCookie"
 
 const UserContext = createContext();
 
@@ -64,11 +66,11 @@ export function UserProvider({ children }) {
     }
   }, []);
 
-  const getCookie = (name) => {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(";").shift();
-  };
+  // export const getCookie = (name) => {
+  //   const value = `; ${document.cookie}`;
+  //   const parts = value.split(`; ${name}=`);
+  //   if (parts.length === 2) return parts.pop().split(";").shift();
+  // };
 
   const refreshTokenFn = async (token) => {
     try {
@@ -99,6 +101,12 @@ export function UserProvider({ children }) {
     toast.success("User logged out successfully!");
     setCurrentUser(null);
     document.cookie = "duziolon=; Max-Age=0; path=/;";
+  }
+
+  if(loadingAuth){
+    return <div className=" flex justify-center items-center min-h-screen">
+      <Loader2 className="animate-spin size-6"/>
+    </div>
   }
 
   return (

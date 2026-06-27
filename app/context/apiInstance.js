@@ -1,14 +1,17 @@
 import axios from "axios";
+import {getCookie} from "../../lib/getCookie"
 
 export const apiClient = axios.create({
-    baseURL: "http://localhost:5000/api",
-    // baseURL: process.env.REACT_APP_BASE_URL,
+    // baseURL: "http://localhost:5000/api",
+    baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
     withCredentials:true,
 })
 
 apiClient.interceptors.request.use(
     (config) => {
-        const accessToken = document.cookie.split("=")[1];
+        // const accessToken = document.cookie.split("=")[1];
+        const accessToken =  getCookie("duziolon");
+        console.log("accesstoken",accessToken)
         if (accessToken) {
             config.headers['Authorization'] = `Bearer ${accessToken}`;
         }

@@ -1,12 +1,15 @@
 import { NextResponse } from "next/server";
 import Product from "../../../../models/ProductModel";
+import { checkToken } from "../../../../../lib/checkToken";
+import mongoose from "mongoose";
 
 export async function POST(req, { params }) {
   try {
     let { prodId } = await params;
-    console.log("prodId", prodId);
+    let userId = checkToken(req)
+    console.log("prodId", prodId,userId);
     let prodExists = await Product.findOne({ _id: prodId });
-    // console.log(prodExists);
+    console.log(userId);
     if (!prodExists) {
       return NextResponse.json(
         { message: "No product found with this ID", success: false },
@@ -104,9 +107,32 @@ export async function POST(req, { params }) {
           as: "allImages",
         },
       },
-
+      {
+        $lookup:{
+          from:'wishlists',
+          let: { productId: "$_id",userId: new mongoose.Types.ObjectId(userId), },
+           pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and:[
+                    {$eq: ["$productId", "$$productId"]},
+                  {  $eq: ["$userId", "$$userId"]},
+                  ] 
+                }
+              },
+            },
+          ],
+          as: "wishlists",
+        }
+      },
       {
         $addFields: {
+          isWishlisted:{
+            $gt:[
+              {$size:"$wishlists"},0
+    ]
+          },
           variants: {
             $map: {
               input: "$variants",
@@ -140,7 +166,7 @@ export async function POST(req, { params }) {
       },
 
       // cleanup temporary field
-      { $project: { allImages: 0 } },
+      { $project: { allImages: 0,wishlists:0 } },
     ]);
 
     return NextResponse.json(
@@ -152,6 +178,7 @@ export async function POST(req, { params }) {
       { status: 200 }
     );
   } catch (error) {
+    console.log(error)
     return NextResponse.json(
       { message: "Cant get a product details.", error, success: false },
       { status: 400 }
