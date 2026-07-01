@@ -9,17 +9,20 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import apiClient from "../../../context/apiInstance";
 import {useUser} from "../../../context/AuthContext"
+import { toast } from "sonner";
 
 export default function Page() {
   const { id } = useParams();
-  const {currentUser} = useUser()
+  const {currentUser,setBagLength} = useUser()
   const [data, setData] = useState();
   const [selectedColor, setSelectedColor] = useState("");
   const [selectedImage, setSelectedImage] = useState("");
   const [selectedSize, setSelectedSize] = useState("");
   const [loading, setLoading] = useState(false);
   const [wishlisting, setWishlisting] = useState(false);
+  const [addingToCart, setAddingToCart] = useState(false);
   const [wishlisted, setWishlisted] = useState(false);
+  const [addedToCart, setAddedToCart] = useState(false);
 
   const getDetailsOfProduct = async () => {
     try {
@@ -48,7 +51,7 @@ export default function Page() {
       let values = {
         productId: id,
       };
-      const res = await apiClient.post(`/wishlist/wishlist-product`, values);
+      const res = await apiClient.post(`/bag/add-to-bag`, values);
       if (res.data.success) {
         setWishlisted(true)
       }
@@ -58,6 +61,39 @@ export default function Page() {
       setWishlisting(false);
     }
   };
+
+  const addProductToBag = async () => {
+    try {
+      setAddingToCart(true);
+      let values = {
+        productId: id,
+        variantId:selectedColor._id,
+        size:selectedSize.size,
+        quantity:1
+      };
+      const res = await apiClient.post(`/bag/add-to-bag`, values);
+      if (res.data.success) {
+        toast.success(res.data.msg);
+        setAddedToCart(true)
+        setBagLength((prev)=>prev=prev+1)
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setAddingToCart(false);
+    }
+  };
+
+  useEffect(()=>{
+    if(!addedToCart) return;
+    let timer = setTimeout(()=>{
+        setAddedToCart(false)
+      },5000)
+    
+      return ()=>clearTimeout(timer)
+
+  },[addedToCart])
+
   const removewishlistProduct = async () => {
     try {
       setWishlisting(true);
@@ -168,7 +204,7 @@ export default function Page() {
 
                 <div>
                   {/* Color + Size */}
-                  <div className="flex  mt-6 items-center justify-between pb-5 border-b-2 border-gray-100 mb-5">
+                  <div className="md:flex grid grid-cols-2 md:grid-cols-1 mt-6 items-center justify-between pb-5 border-b-2 border-gray-100 mb-5">
                     {/* Colors */}
                     <div className="flex">
                       <span className="mr-3">Color</span>
@@ -247,8 +283,18 @@ export default function Page() {
                       </span>
                     </div>
 
-                    <Button className="flex ml-auto" disabled={true}>Add to Cart</Button>
-
+                    <Button className="flex ml-auto" disabled={addingToCart || addedToCart} onClick={addProductToBag}>
+                      {
+                      addingToCart ?
+                      <span className="flex items-center gap-2">Please wait
+                        <Loader2 className="animate-spin"/>
+                      </span>
+                      :
+                      addedToCart
+                      ?
+                      "Added to Bag"
+                      :
+                      "Add to Bag"}</Button>
                     {/* <button className="rounded-full w-10 h-10 bg-gray-200 inline-flex items-center justify-center text-gray-500 ml-4">
                 <svg
                   fill="currentColor"

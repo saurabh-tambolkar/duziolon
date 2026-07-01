@@ -11,7 +11,6 @@ apiClient.interceptors.request.use(
     (config) => {
         // const accessToken = document.cookie.split("=")[1];
         const accessToken =  getCookie("duziolon");
-        console.log("accesstoken",accessToken)
         if (accessToken) {
             config.headers['Authorization'] = `Bearer ${accessToken}`;
         }
@@ -26,10 +25,8 @@ apiClient.interceptors.request.use(
 
 
 apiClient.interceptors.response.use(function(response){
-    console.log("this is from api client",response)
     return response
 },function (error){
-    console.log("this is from api client",error)
 
     const originalRequest = error.config;
 

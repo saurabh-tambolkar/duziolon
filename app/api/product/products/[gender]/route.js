@@ -121,7 +121,7 @@ import Product from "../../../../models/ProductModel";
 import ConnectDb from "../../../../db/ConnectDb";
 import mongoose from "mongoose";
 
-export async function POST(req, { params }) {
+export async function GET(req, { params }) {
   try {
     await ConnectDb();
 

@@ -13,7 +13,7 @@ function CardItem({ product }) {
         src={product?.image?.url}
         width={"200"}
         height={"200"}
-        className="w-full rounded-t-md h-68 object-cover"
+        className="w-full rounded-t-md h-40 md:h-68 object-contain"
       />
       <div className="p-2">
       <div className="flex gap-2 mb-2">
@@ -31,12 +31,12 @@ function CardItem({ product }) {
       <h1 className="font-bold text-md">Duziolon</h1>
       <h6 className="font-semibold text-xs text-white bg-black rounded-2xl w-auto pr-2 pl-2" style={{fontSize:10}}>{product.category}</h6>
       </div>
-      <h2 className="font-semibold text-sm">{product.name}</h2>
-      <div className="flex mt-4 mb-4"> 
+      <h2 className="font-semibold text-sm text-gray-500 truncate">{product.name}</h2>
+      <div className="flex mt-4"> 
         <IndianRupee className="size-4" />
       <h2 className="font-semibold text-xl">{product.sizes[0]?.price || "Not added yet!"}</h2>
       </div>
-      <h2 className="font-semibold text-sm flex gap-2">FREE delivery Tomorrow 8 am - 12 pm</h2>
+      {/* <h2 className="font-semibold text-sm flex gap-2">FREE delivery Tomorrow 8 am - 12 pm</h2> */}
       </div>
       {/* <Button className="w-full rounded-b-md bg-white text-black hover:bg-black hover:text-white">
         Add to Cart

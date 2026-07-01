@@ -21,7 +21,8 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { Separator } from "./ui/separator";
-import {  optionsProfUser,optionsProfAdmin,navOptions } from "@/lib/navRoutes"
+import {  optionsProfUser,optionsProfAdmin,navOptions, navOptionsMobile } from "@/lib/navRoutes"
+import { Badge } from "./ui/badge";
 
 function Navbar() {
   const url = usePathname()
@@ -29,7 +30,7 @@ function Navbar() {
   const [blur, setBlur] = useState(false);
   const [menuIsOpen, setMenuIsOpen] = useState(false);
 
-  const { currentUser, logout } = useUser();
+  const { currentUser, logout, bagLength } = useUser();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -82,6 +83,7 @@ function Navbar() {
             <Link
               key={item.name}
               href={href}
+              prefetch
               className={
                 isActive ? "border-b-2 border-b-gray-950 font-bold" : ""
               }
@@ -92,10 +94,14 @@ function Navbar() {
         })}
       </div>
       {currentUser ? (
-        <div className="flex items-center gap-8">
-          <Link href="/bag">
+        <div className="hidden md:flex items-center gap-8">
+          {
+            currentUser.role == "User" &&
+          <Link href="/bag" className="relative">
           <Handbag size={24} />
+            <Badge className="absolute -top-2 -right-3 rounded-full text-xs pl-2 pr-2">{bagLength || 0}</Badge>
           </Link>
+          }
 
           <HoverCard openDelay={10} closeDelay={100}>
             <HoverCardTrigger asChild>
@@ -152,40 +158,26 @@ function Navbar() {
         } h-auto w-full md:hidden`}
       >
         <div className="flex flex-col items-center space-y-4 py-6">
-          <Link
-            href="/"
-            className={
-              url == ""
-                ? "border-b-2 border-b-gray-950 font-bold"
-                : " text-black text-lg"
-            }
-            onClick={() => setMenuIsOpen(false)}
-          >
-            Home
-          </Link>
+          {navOptionsMobile.map((item) => {
+          let href =item.path;
+          // href = href.replace("/","")
 
-          <Link
-            href="/products/mens"
-            className={
-              url.includes("/mens")
-                ? "border-b-2 border-b-gray-950 font-bold"
-                : " text-black text-lg"
-            }
-            onClick={() => setMenuIsOpen(false)}
-          >
-            Mens
-          </Link>
-          <Link
-            href="/products/womens"
-            className={
-              url.includes("/womens")
-                ? "border-b-2 border-b-gray-950 font-bold"
-                : " text-black text-lg"
-            }
-            onClick={() => setMenuIsOpen(false)}
-          >
-            Womens
-          </Link>
+          const isActive = url == href;
+
+          return (
+            <Link
+              key={item.name}
+              href={href}
+              prefetch
+              onClick={() => setMenuIsOpen(false)}
+              className={
+                isActive ? "border-b-2 border-b-gray-950 font-bold" : ""
+              }
+            >
+              {item.name}
+            </Link>
+          );
+        })}
           {/* <Link
             href="/"
             className="text-black text-lg"
@@ -194,14 +186,23 @@ function Navbar() {
             Accessories
           </Link> */}
           {currentUser ? (
-            <div className="flex flex-col items-center gap-8">
-              <Handbag size={24} onClick={logout} />
-              <Link className="-mt-4" href={"/profile"}>
+            <div className="flex flex-col items-center gap-2">
+              <Link href={"/wishlist"}   onClick={() => setMenuIsOpen(false)}>
+              <p>Wishlist</p>
+              </Link>
+              <Link href={"/orders"}   onClick={() => setMenuIsOpen(false)}>
+              <p>Orders</p>
+              </Link>
+             <Link href="/bag" className=" mt-2 relative">
+          <Handbag size={24} />
+            <Badge className="absolute -top-2 -right-3 rounded-full text-xs pl-2 pr-2">{bagLength || 0}</Badge>
+          </Link>
+              <Link className="mt-4" href={"/profile"}   onClick={() => setMenuIsOpen(false)}>
                 <User size={24} />
               </Link>
             </div>
           ) : (
-            <Button className="block">
+            <Button className="block"   onClick={() => setMenuIsOpen(false)}>
               <Link href={"/sign-in"}>Sign In</Link>
             </Button>
           )}

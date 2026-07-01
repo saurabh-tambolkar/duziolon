@@ -44,7 +44,7 @@ export default function PrivateLayout({ children }) {
 
   if (currentUser?.role === "Admin") {
     console.log("Redirecting admin");
-    router.replace("/admin/category");
+    router.replace("/admin/dashboard");
   } else if (currentUser) {
     console.log("Redirecting user");
     router.replace("/");

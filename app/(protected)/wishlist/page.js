@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import apiClient from "../../context/apiInstance";
 import { Loader2 } from "lucide-react";
-import empty from "../../assets/empty-wishlist.png";
+import empty from "../../assets/empty-wishlists.png";
 import Image from "next/image";
 import WishlistCard from "../../../components/WishlistCard";
 
@@ -27,14 +27,14 @@ function page() {
     },[])
 
   return (
-    <div className="min-h-screen pt-28 p-12">
+    <div className="min-h-screen pt-28 p-4 md:p-12 md:pt-24">
       <h1 className="text-2xl font-bold">Your Wishlist</h1>
       {loading ? (
         <div className="min-h-40 flex justify-center items-center">
           <Loader2 className="size-4 animate-spin" />
         </div>
       ) : data && data.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 pt-12">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-12">
             {
                 data.map((item)=>{
                     return (
@@ -48,13 +48,11 @@ function page() {
           <Image
             alt="empty"
             src={empty}
-            className="h-60 w-60"
+            className="h-100 w-100"
             height={500}
             width={500}
           />
-          <p className="text-gray-500 font-semibold">
-            OOPS, You have got an empty Wishlist!
-          </p>
+         
         </div>
       )}
     </div>

@@ -20,6 +20,9 @@ import { Toaster } from "@/components/ui/sonner";
 export const metadata: Metadata = {
   title: "Duziolon",
   description: "A place to get your perfect drip!",
+  // icons: {
+  //   icon: "/favicon.ico", 
+  // },
 };
 
 export default function RootLayout({
@@ -42,8 +45,7 @@ export default function RootLayout({
       </head>
 
       <body className={`antialiased min-h-screen`}>
-        <UserProvider>
-
+        <UserProvider> 
         <Navbar/>
         {children}
         <Toaster/>

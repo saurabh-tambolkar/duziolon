@@ -110,7 +110,7 @@ export async function POST(req, { params }) {
       {
         $lookup:{
           from:'wishlists',
-          let: { productId: "$_id",userId: new mongoose.Types.ObjectId(userId), },
+          let: { productId: "$_id",userId: new mongoose.Types.ObjectId(userId || null), },
            pipeline: [
             {
               $match: {

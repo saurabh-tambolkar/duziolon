@@ -32,7 +32,7 @@ function WishlistCard({item,getWishlist}) {
 
   return (
     <Link href={`/products/${item.product.gender}/${item.productId}`} className=' rounded-md border shadow-xl'>
-        <Image alt='image' src={item.product?.image?.url} height={200} width={200} className="w-full h-60 object-cover"/>
+        <Image alt='image' src={item.product?.image?.url} height={200} width={200} className="w-full h-40 md:h-60 object-contain"/>
         <div className='p-2'>
             <div className='flex justify-between items-center'>
                 <div>
@@ -46,11 +46,11 @@ function WishlistCard({item,getWishlist}) {
                     <Trash2Icon onClick={deleteWishlistItem} className='text-red-500 mr-2'/>
                 }
             </div>
-             <div className="flex mt-4 mb-4"> 
+             <div className="flex mt-2 mb-2"> 
         <IndianRupee className="size-4" />
       <h2 className="font-semibold text-xl">{item?.product.price?.price || "Not added yet!"}</h2>
       </div>
-             <h4>Available in {item?.product?.sizes} sizes</h4>
+             <h4>Available in {item?.product?.sizes?.length} sizes</h4>
         </div>
         </Link>
   )

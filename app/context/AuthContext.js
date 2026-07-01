@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 // import { toast } from "@/components/ui/sonner";
-import {getCookie} from "@/lib/getCookie"
+import { getCookie } from "@/lib/getCookie";
 
 const UserContext = createContext();
 
@@ -14,13 +14,14 @@ export function UserProvider({ children }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loadingAuth, setLoadingAuth] = useState(true);
+  const [bagLength, setBagLength] = useState(0);
   const router = useRouter();
 
   const login = async (data) => {
     console.log(data);
     try {
       setIsSubmitting(true);
-      setLoadingAuth(true)
+      setLoadingAuth(true);
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/sign-in`,
         data,
@@ -29,17 +30,18 @@ export function UserProvider({ children }) {
       // const response = await apiC.post(`/login`,data,{withCredentials:true})
       if (response.data.success) {
         console.log(response.data.userDetails);
+        getBagItemsLength(response.data.userDetails._id);
         setCurrentUser(response.data.userDetails);
         localStorage.setItem(
           "duziolonRefreshToken",
           response.data.refreshToken,
         );
         document.cookie = `duziolon=${response.data.accessToken}; max-age=86400; Secure; SameSite=Strict;`;
-         if (response.data.userDetails.role == "Admin") {
-    router.replace("/admin/category");
-  } else {
-    router.replace("/admin/products");
-  }
+        if (response.data.userDetails.role == "Admin") {
+          router.replace("/admin/category");
+        } else {
+          router.replace("/admin/products");
+        }
         // router.push("/");
         toast.success("Logged In Successfully!");
       }
@@ -50,7 +52,7 @@ export function UserProvider({ children }) {
       toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
-      setLoadingAuth(false)
+      setLoadingAuth(false);
     }
   };
 
@@ -81,7 +83,7 @@ export function UserProvider({ children }) {
 
       if (response.data.success) {
         setCurrentUser(response.data.userDetails);
-
+        getBagItemsLength(response.data.userDetails._id)
         document.cookie = `duziolon=${response.data.accessToken}; max-age=${
           60 * 60
         }; Secure; SameSite=Strict; Path=/`;
@@ -90,6 +92,20 @@ export function UserProvider({ children }) {
       setCurrentUser(null);
     } finally {
       setLoadingAuth(false);
+    }
+  };
+  const getBagItemsLength = async (id) => {
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/bag/get-bag-length`,{userId:id},
+      );
+
+      if (response.data.success) {
+        setBagLength(response.data.numOfItemsIsBag)
+      }
+    } catch (error) {
+      setCurrentUser(null);
+    } finally {
     }
   };
 
@@ -103,10 +119,12 @@ export function UserProvider({ children }) {
     document.cookie = "duziolon=; Max-Age=0; path=/;";
   }
 
-  if(loadingAuth){
-    return <div className=" flex justify-center items-center min-h-screen">
-      <Loader2 className="animate-spin size-6"/>
-    </div>
+  if (loadingAuth) {
+    return (
+      <div className=" flex justify-center items-center min-h-screen">
+        <Loader2 className="animate-spin size-6" />
+      </div>
+    );
   }
 
   return (
@@ -119,6 +137,9 @@ export function UserProvider({ children }) {
         logout,
         loadingAuth,
         setLoadingAuth,
+        getBagItemsLength,
+        bagLength,
+        setBagLength
       }}
     >
       {children}
