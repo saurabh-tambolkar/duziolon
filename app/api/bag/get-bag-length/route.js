@@ -2,9 +2,11 @@ import { NextResponse } from "next/server";
 import { checkToken } from "../../../../lib/checkToken";
 import Bag from "../../../models/BagModel";
 import mongoose from "mongoose";
+import ConnectDb from "../../../db/ConnectDb";
 
 export async function POST(req, res) {
   try {
+     await ConnectDb();
     let payload = await req.json();
     let {userId} = payload
     console.log("u",userId);

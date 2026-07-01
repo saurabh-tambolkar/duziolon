@@ -2,9 +2,11 @@ import { NextResponse } from "next/server";
 import { checkToken } from "../../../../lib/checkToken";
 import Bag from "../../../models/BagModel";
 import Size from "../../../models/SizeModel";
+import ConnectDb from "../../../db/ConnectDb";
 
 export async function POST(req, res) {
   try {
+     await ConnectDb();
     let userId = checkToken(req);
     let payload = await req.json();
     let { productId, size, variantId, quantity } = payload;

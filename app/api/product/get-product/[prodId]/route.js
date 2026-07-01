@@ -2,9 +2,11 @@ import { NextResponse } from "next/server";
 import Product from "../../../../models/ProductModel";
 import { checkToken } from "../../../../../lib/checkToken";
 import mongoose from "mongoose";
+import ConnectDb from "../../../../db/ConnectDb";
 
 export async function POST(req, { params }) {
   try {
+    await ConnectDb();
     let { prodId } = await params;
     let userId = checkToken(req)
     console.log("prodId", prodId,userId);

@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import Coupon from "../../../models/CouponsModel";
+import ConnectDb from "../../../db/ConnectDb";
 
 export async function POST(req, res) {
   try {
+     await ConnectDb();
     let payload = await req.json()
     let {name} = payload
 

@@ -2,9 +2,11 @@ import { NextResponse } from "next/server";
 import { checkToken } from "../../../../lib/checkToken";
 import mongoose from "mongoose";
 import Order from "../../../models/OrderModel";
+import ConnectDb from "../../../db/ConnectDb";
 
 export async function POST(req, res) {
   try {
+     await ConnectDb();
       let userId = checkToken(req);
       console.log(userId);
       if(!userId){

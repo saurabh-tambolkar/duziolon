@@ -4,14 +4,16 @@ import axios from "axios";
 import { checkToken } from "../../../../../lib/checkToken";
 import Bag from "../../../../models/BagModel";
 import Order from "../../../../models/OrderModel";
+import ConnectDb from "../../../../db/ConnectDb";
  
 export async function POST(req){
     try {
+         await ConnectDb();
         const { id} = await req.json();
-        console.log("Status API called", id, Date.now());
-        console.log("saurabh",id)
+        // console.log("Status API called", id, Date.now());
+        // console.log("saurabh",id)
         let isOrderPresentWithTransId = await Order.findOne({transactionId:id})
-        console.log("hello",isOrderPresentWithTransId)
+        // console.log("hello",isOrderPresentWithTransId)
         if(!isOrderPresentWithTransId){
             let userId = checkToken(req);
             const merchantId = process.env.PHONEPE_MERCHANT_ID;
