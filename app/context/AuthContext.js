@@ -31,7 +31,7 @@ export function UserProvider({ children }) {
     console.log(data);
     try {
       setIsSubmitting(true);
-      setLoadingAuth(true);
+      // setLoadingAuth(true);
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/sign-in`,
         data,
@@ -62,7 +62,7 @@ export function UserProvider({ children }) {
       toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
-      setLoadingAuth(false);
+      // setLoadingAuth(false);
     }
   };
 
@@ -129,10 +129,18 @@ export function UserProvider({ children }) {
     document.cookie = "duziolon=; Max-Age=0; path=/;";
   }
 
-  if (loadingAuth || loading) {
+  if (loading) {
     return (
       <div className=" flex flex-col justify-center items-center min-h-screen">
         <Image src={mainImg} alt="Main Image" className="h-50 w-50 md:h-100 md:w-100" height={100} width={400}/>
+        <Loader2 className="animate-spin size-6 mt-4" />
+      </div>
+    );
+  }
+  if (loadingAuth) {
+    return (
+      <div className=" flex flex-col justify-center items-center min-h-screen">
+        {/* <Image src={mainImg} alt="Main Image" className="h-50 w-50 md:h-100 md:w-100" height={100} width={400}/> */}
         <Loader2 className="animate-spin size-6 mt-4" />
       </div>
     );
