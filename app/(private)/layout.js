@@ -73,5 +73,5 @@ export default function PrivateLayout({ children }) {
     return null;
   }
 
-  return <>{children}</>;
+  return <div className="min-h-screen">{children}</div>;
 }

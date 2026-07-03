@@ -14,7 +14,12 @@ export async function POST(req, res) {
       }
     let orders = await Order.aggregate([
       {
-        $match: { userId: new mongoose.Types.ObjectId(userId) },
+        $match:{
+          $and:[
+            { userId: new mongoose.Types.ObjectId(userId) },
+            { transactionStatus: "SUCCESS"}
+          ]
+        } 
       },
       {
         $unwind:"$items"
@@ -68,6 +73,7 @@ export async function POST(req, res) {
           "items.product": {
             _id: "$prod._id",
             name: "$prod.name",
+            gender: "$prod.gender",
             description: "$prod.description",
             color: "$variant.color",
             price: "$size.price",
@@ -82,6 +88,13 @@ export async function POST(req, res) {
           _id: "$_id",
           userId: { $first: "$userId" },
           totalAmount: { $first: "$amount" },
+          totalAmountPaid: { $first: "$amountPaid" },
+          couponCode: { $first: "$couponCode" },
+          couponCodeDiscount: { $first: "$couponCodeDiscount" },
+          isCouponApplied: { $first: "$isCouponApplied" },
+          orderStatus: { $first: "$status" },
+          paymentStatus: { $first: "$paymentStatus" },
+          time: { $first: "$updatedAt" },
           items: { $push: "$items" },
         },
       },

@@ -11,6 +11,7 @@ export default async function Page({params}) {
     }
   );
   const data = await res.json();
+  console.log("data", data);
 
   return (
     <div className="min-h-screen pt-30 mx-auto w-11/12">

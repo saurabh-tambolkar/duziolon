@@ -6,16 +6,26 @@ import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 // import { toast } from "@/components/ui/sonner";
 import { getCookie } from "@/lib/getCookie";
+import Image from "next/image";
+import mainImg from "../assets/mainImage.png";
 
 const UserContext = createContext();
 
 export function UserProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [loadingAuth, setLoadingAuth] = useState(true);
   const [bagLength, setBagLength] = useState(0);
   const router = useRouter();
+
+  useEffect(() => {
+    let timer = setTimeout(() => {
+      setLoading(false);
+    },2000)
+    console.log("3000 done")
+    return () => clearTimeout(timer)
+  }, []);
 
   const login = async (data) => {
     console.log(data);
@@ -119,10 +129,11 @@ export function UserProvider({ children }) {
     document.cookie = "duziolon=; Max-Age=0; path=/;";
   }
 
-  if (loadingAuth) {
+  if (loadingAuth || loading) {
     return (
-      <div className=" flex justify-center items-center min-h-screen">
-        <Loader2 className="animate-spin size-6" />
+      <div className=" flex flex-col justify-center items-center min-h-screen">
+        <Image src={mainImg} alt="Main Image" className="h-50 w-50 md:h-100 md:w-100" height={100} width={400}/>
+        <Loader2 className="animate-spin size-6 mt-4" />
       </div>
     );
   }
@@ -139,7 +150,7 @@ export function UserProvider({ children }) {
         setLoadingAuth,
         getBagItemsLength,
         bagLength,
-        setBagLength
+        setBagLength,
       }}
     >
       {children}

@@ -24,5 +24,5 @@ export default function ProtectedLayout({ children }) {
     return null;
   }
 
-  return <>{children}</>;
+  return <div className="min-h-screen">{children}</div>;
 }

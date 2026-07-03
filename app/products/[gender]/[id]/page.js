@@ -27,9 +27,7 @@ export default function Page() {
   const getDetailsOfProduct = async () => {
     try {
       setLoading(true);
-      const res = await apiClient.post(`/product/get-product/${id}`, {
-        cache: "force-cache",
-      });
+      const res = await apiClient.post(`/product/get-product/${id}`);
       if (res.data.success) {
         setData(res.data.prodDetails[0]);
         setSelectedColor(res.data.prodDetails[0].variants[0]);
@@ -51,7 +49,7 @@ export default function Page() {
       let values = {
         productId: id,
       };
-      const res = await apiClient.post(`/bag/add-to-bag`, values);
+      const res = await apiClient.post(`/wishlist/wishlist-product`, values);
       if (res.data.success) {
         setWishlisted(true)
       }

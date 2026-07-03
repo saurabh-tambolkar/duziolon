@@ -200,6 +200,15 @@ function Navbar() {
               <Link className="mt-4" href={"/profile"}   onClick={() => setMenuIsOpen(false)}>
                 <User size={24} />
               </Link>
+              <Button
+                className="bg-red-500 font-bold hover:bg-red-400 mt-4"
+                onClick={() => {
+                  logout();
+                  setMenuIsOpen(false);
+                }}
+              >
+                Logout
+              </Button>
             </div>
           ) : (
             <Button className="block"   onClick={() => setMenuIsOpen(false)}>

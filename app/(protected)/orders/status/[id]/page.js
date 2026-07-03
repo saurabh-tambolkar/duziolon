@@ -16,7 +16,8 @@ export default function OrderPlacedPage() {
 
   const router = useRouter();
 
-  let {getBagItemsLength} = useUser()
+  let {getBagItemsLength,couponDetails} = useUser()
+  console.log(couponDetails)
 
   let { id } = useParams();
 
@@ -24,14 +25,13 @@ export default function OrderPlacedPage() {
 
   const fetchStatus = useCallback(async () => {
     try {
-      console.log("running");
       setLoading(true);
       const response = await apiClient.post("/order/payments/status", {
         id: id,
       });
-      console.log(response);
       if (response.data.success) {
         setStatus(response.data);
+        getBagItemsLength()
       }
     } catch (error) {
       const errorMessage = error
@@ -100,7 +100,7 @@ export default function OrderPlacedPage() {
           <div className="mt-8 bg-gray-100 rounded-xl p-5 space-y-3">
             <div className="flex justify-between">
               <span className="text-gray-500">Order ID</span>
-              <span className="font-semibold">{status?.newOrder?._id}</span>
+              <span className="font-semibold">{status?.isOrderPresentWithTransId?._id}</span>
             </div>
 
             <div className="flex justify-between">

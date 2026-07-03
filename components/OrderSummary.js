@@ -7,6 +7,7 @@ import {Button} from "./ui/button"
 import apiClient from '@/app/context/apiInstance';
 import { useRouter } from 'next/navigation';
 import {initiatePayment} from "../lib/initiatePayment"
+import { useUser } from '@/app/context/AuthContext';
 
 function OrderSummary({data}) {
 
@@ -50,12 +51,23 @@ function OrderSummary({data}) {
     setResult((prev)=>({...prev,discountAmount}))
   }
 
+
     const handlePayment = async () => {
     try {
       setLoading(true);
-      let result = await initiatePayment(totalAmount || data.totalAmount)
-      console.log(result)
-      router.push(result.redirectUrl)
+      let res = await initiatePayment(totalAmount || data.totalAmount)
+      console.log(res)
+      let resultOfPreOrderCheckout = await apiClient.post(`/order/pre-order-checkout`,{
+        id: res?.transactionId,
+        isCouponApplied: result?.discount ? true : false,
+        couponCode: result?.discount ? result?.couponName : "",
+        couponCodeDiscount: result?.discount || 0,
+        amount: data.totalAmount
+      })
+      console.log(resultOfPreOrderCheckout)
+      if(resultOfPreOrderCheckout.data.success){
+      router.push(res.redirectUrl)
+      }
     } catch (err) {
       console.error(err);
     } finally {
@@ -66,7 +78,7 @@ function OrderSummary({data}) {
 
   return (
    <div className="shadow-lg rounded-md p-4 w-auto border md:sticky md:top-20">
-          <h3 className="text-xl font-bold mb-4">Order Summary</h3>
+          <h3 className="text-xl font-bold mb-4" onClick={()=>console.log(couponDetails)}>Order Summary</h3>
           <div className="flex justify-between mt-3 mb-3">
             <h3 className="text-gray-600 font-semibold">Subtotal </h3>
             <div className="flex items-center">
