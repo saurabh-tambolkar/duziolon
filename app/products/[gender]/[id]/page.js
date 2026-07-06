@@ -111,7 +111,7 @@ export default function Page() {
 
   useEffect(() => {
     getDetailsOfProduct();
-  }, []);
+  }, [id]);
 
   return (
     <>
@@ -123,7 +123,7 @@ export default function Page() {
         <section className="text-gray-600 body-font overflow-hidden pt-12 min-h-screen flex justify-center items-center">
           <div className="container px-5 py-24 mx-auto">
             <div className="lg:w-4/5 mx-auto flex flex-wrap">
-              <div className="w-full lg:w-1/2 flex flex-col md:flex-row gap-2">
+              <div className="w-full lg:w-1/2 flex flex-col md:flex-row gap-4">
                 <div className="lg:w-1/4 flex flex-row md:flex-col gap-2 order-2 md:order-0">
                   {selectedColor &&
                     selectedColor?.images?.map((img) => {
@@ -134,7 +134,7 @@ export default function Page() {
                           height={50}
                           width={50}
                           alt="ecommerce"
-                          className={` ${selectedImage == img.url && "border-2 border-black"} md:w-full w-1/4 md:h-20 h-20 object-contain object-center rounded border-1`}
+                          className={` ${selectedImage == img.url && "border-2 border-black"} w-1/4 md:w-full  md:h-20 h-20 object-contain object-center rounded border-1`}
                           src={img.url || null}
                         />
                       );
@@ -143,7 +143,7 @@ export default function Page() {
                 {selectedImage && (
                   <Image
                     alt="ecommerce"
-                    className="lg:w-full w-full lg:h-120 h-64 object-cover object-center rounded"
+                    className=" w-1/2 md:w-1/4  lg:w-full md:h-100 h-80 object-contain object-center rounded"
                     height={500}
                     width={500}
                     src={selectedImage}

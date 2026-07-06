@@ -5,13 +5,10 @@ export const revalidate = 60; // cache for 60 seconds
 export default async function Page({params}) {
   let {gender} = await params;
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/products/${gender}`,
-    {
-      cache: "force-cache",
-    }
-  );
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/products/${gender}`,{
+  cache: "force-cache"
+});
   const data = await res.json();
-  console.log("data", data);
 
   return (
     <div className="min-h-screen pt-30 mx-auto w-11/12">

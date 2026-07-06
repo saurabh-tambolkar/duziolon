@@ -9,9 +9,8 @@ export async function POST(req, { params }) {
     await ConnectDb();
     let { prodId } = await params;
     let userId = checkToken(req)
-    console.log("prodId", prodId,userId);
     let prodExists = await Product.findOne({ _id: prodId });
-    console.log(userId);
+    console.log("hello")
     if (!prodExists) {
       return NextResponse.json(
         { message: "No product found with this ID", success: false },

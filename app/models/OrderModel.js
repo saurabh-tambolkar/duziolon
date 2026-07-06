@@ -75,6 +75,10 @@ const OrderSchema = new mongoose.Schema(
     amountPaid: {
       type: Number,
     },
+    addressId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref:"AddressModel"
+    },
   },
   { timestamps: true },
 );

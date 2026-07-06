@@ -124,6 +124,7 @@ import mongoose from "mongoose";
 export async function GET(req, { params }) {
   try {
     await ConnectDb();
+    console.log("api called here ")
 
     const { gender } = await params;
 

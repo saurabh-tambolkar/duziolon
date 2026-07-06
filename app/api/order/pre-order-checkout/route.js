@@ -7,7 +7,7 @@ export async function POST(req){
     try {
         await ConnectDb();
         let userId = checkToken(req);
-        const { id,isCouponApplied,couponCode,couponCodeDiscount,amount } = await req.json();
+        const { id,isCouponApplied,couponCode,couponCodeDiscount,amount,address } = await req.json();
         console.log( id,isCouponApplied,couponCode,couponCodeDiscount,amount,userId )
         let isOrderPresentWithTransId = await Order.findOne({transactionId:id})
         if(isOrderPresentWithTransId){
@@ -23,7 +23,8 @@ export async function POST(req){
                 isCouponApplied,
                 couponCode : isCouponApplied ? couponCode : "",
                 couponCodeDiscount : isCouponApplied ? couponCodeDiscount : 0,
-                amount:amount
+                amount:amount,
+                addressId:address
             })
             await newOrder.save();
             return NextResponse.json({

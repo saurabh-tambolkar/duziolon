@@ -3,11 +3,13 @@ import React from "react";
 import HomePic1 from "./assets/homePic1.jpg";
 import { Button } from "@/components/ui/button";
 import {MoveRight} from "lucide-react"
+import Features from "../components/Features";
+import CategoryCard from "../components/CategoryCard";
 
 function page() {
   return (
     <div className="bg-white min-h-screen ">
-      <div className="grid grid-cols-1 md:grid-cols-2 h-screen  pr-4 pl-4 md:pr-16 md:pl-24">
+      <div className="grid grid-cols-1 md:grid-cols-2 h-screen  px-4 md:pr-24 md:pl-24">
         <div className="flex flex-col justify-center space-y-8 pt-24">
           <h1 className="text-5xl md:text-7xl font-bold">
             The Look You Want. The Price You’ll Love.
@@ -24,7 +26,7 @@ function page() {
           <Button className="w-1/2 md:w-1/4">Shop Now <MoveRight className="text-white" /></Button>
         </div>
 
-        <div className=" block gap-4 md:flex md:flex-col md:items-center md:justify-center md:grid md:grid-cols-2 md:gap-4 md:overflow-hidden mb-12 md:mb-0">
+        <div className="block gap-4 md:flex md:flex-col md:items-center md:justify-end md:grid md:grid-cols-2 md:gap-4 md:overflow-hidden mb-12 md:mb-0">
           <div className="hidden md:flex md:flex-col justify-baseline items-end  gap-4 overflow-x-scroll w-full">
             <Image
               src={
@@ -94,6 +96,8 @@ function page() {
           </div>
         </div>
       </div>
+      <Features/>
+      <CategoryCard/>
     </div>
   );
 }

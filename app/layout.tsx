@@ -48,7 +48,7 @@ export default function RootLayout({
         <UserProvider> 
         <Navbar/>
         {children}
-        <Toaster/>
+        <Toaster position="top-center"/>
         <Footer/>
         </UserProvider>
       </body>

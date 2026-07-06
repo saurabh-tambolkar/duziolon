@@ -83,6 +83,20 @@ export async function POST(req, res) {
           },
         },
       },
+      {
+  $lookup: {
+    from: "addressmodels", // collection name
+    localField: "addressId",
+    foreignField: "_id",
+    as: "address",
+  },
+},
+{
+  $unwind: {
+    path: "$address",
+    preserveNullAndEmptyArrays: true,
+  },
+},
        {
         $group: {
           _id: "$_id",
@@ -95,6 +109,19 @@ export async function POST(req, res) {
           orderStatus: { $first: "$status" },
           paymentStatus: { $first: "$paymentStatus" },
           time: { $first: "$updatedAt" },
+          address: {
+      $first: {
+        flat: "$address.flat",
+        street: "$address.street",
+        landmark: "$address.landmark",
+        city: "$address.city",
+        taluqa: "$address.taluqa",
+        district: "$address.district",
+        state: "$address.state",
+        country: "$address.country",
+        postalCode: "$address.postalCode",
+      },
+    },
           items: { $push: "$items" },
         },
       },

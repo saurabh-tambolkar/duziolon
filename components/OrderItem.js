@@ -10,6 +10,7 @@ import {
   Clock3,
   XCircle,
   Dot,
+  MapPin,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -60,6 +61,7 @@ function OrderItem({ item }) {
             {item.items.length} Item{item.items.length > 1 ? "s" : ""}
           </span>
           </div>
+          <p className="flex items-center mt-4 gap-2 text-sm"><MapPin className="size-4"/> {item.address.flat} {item.address.street}, {item.address.landmark}, {item.address.city}, {item.address.district}, {item.address.state}.</p>
         </div>
 
         <div className="flex justify-between  items-center gap-4 ">
@@ -148,12 +150,7 @@ function OrderItem({ item }) {
               </div>
             ))}
           </div>
-        </div>
-      )}
-
-      {/* ---------------- Summary ---------------- */}
-
-      <div className="border-y border-neutral-200 bg-neutral-50/40 px-4 py-4">
+      <div className=" border-neutral-200 bg-neutral-50/40 px-4 py-4">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 ">
           <div>
             <p className="text-sm text-neutral-500">Total Amount</p>
@@ -202,6 +199,11 @@ function OrderItem({ item }) {
 
         </div>
       </div>
+        </div>
+      )}
+
+      {/* ---------------- Summary ---------------- */}
+
 
       {/* ---------------- Products ---------------- */}
 
