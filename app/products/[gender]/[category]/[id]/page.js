@@ -2,18 +2,18 @@
 import axios from "axios";
 import { Heart, IndianRupee, Loader2 } from "lucide-react";
 import { useParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import { Button } from "../../../../components/ui/button";
+import React, { useEffect, useRef, useState } from "react";
+import { Button } from "../../../../../components/ui/button";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
-import apiClient from "../../../context/apiInstance";
-import {useUser} from "../../../context/AuthContext"
+import apiClient from "../../../../context/apiInstance";
+import {useUser} from "../../../../context/AuthContext"
 import { toast } from "sonner";
 
 export default function Page() {
   const { id } = useParams();
-  const {currentUser,setBagLength} = useUser()
+  const {currentUser,getBagItemsLength} = useUser()
   const [data, setData] = useState();
   const [selectedColor, setSelectedColor] = useState("");
   const [selectedImage, setSelectedImage] = useState("");
@@ -24,8 +24,11 @@ export default function Page() {
   const [wishlisted, setWishlisted] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
 
+  let numOfApiCAlled = useRef(0)
+
   const getDetailsOfProduct = async () => {
     try {
+      numOfApiCAlled.current = 1
       setLoading(true);
       const res = await apiClient.post(`/product/get-product/${id}`);
       if (res.data.success) {
@@ -73,7 +76,8 @@ export default function Page() {
       if (res.data.success) {
         toast.success(res.data.msg);
         setAddedToCart(true)
-        setBagLength((prev)=>prev=prev+1)
+        // setBagLength((prev)=>prev=prev+1)
+        getBagItemsLength(currentUser._id)
       }
     } catch (error) {
       console.log(error);
@@ -81,6 +85,10 @@ export default function Page() {
       setAddingToCart(false);
     }
   };
+
+  const showToastForLogin=()=>{
+    toast.error("You should login first to add product to bag.")
+  }
 
   useEffect(()=>{
     if(!addedToCart) return;
@@ -110,12 +118,15 @@ export default function Page() {
   };
 
   useEffect(() => {
-    getDetailsOfProduct();
+    console.log(numOfApiCAlled.current)
+    if(numOfApiCAlled.current == 0){
+      getDetailsOfProduct();
+    }
   }, [id]);
 
   return (
     <>
-      {loading ? (
+      {loading && !data ? (
         <div className="min-h-screen flex justify-center items-center">
           <Loader2 className="animate-spin" />
         </div>
@@ -143,7 +154,7 @@ export default function Page() {
                 {selectedImage && (
                   <Image
                     alt="ecommerce"
-                    className=" w-1/2 md:w-1/4  lg:w-full md:h-100 h-80 object-contain object-center rounded"
+                    className=" w-full md:w-1/4  lg:w-full md:h-100 h-80 object-contain object-center rounded"
                     height={500}
                     width={500}
                     src={selectedImage}
@@ -154,7 +165,7 @@ export default function Page() {
               <div className="lg:w-1/2 justify-between flex flex-col w-full lg:pl-10 lg:py-6 mt-6 lg:mt-0">
                 <div>
                   <h2 className="text-sm title-font text-gray-500 tracking-widest">
-                    DUZIOLON
+                    DUZIOLON 
                   </h2>
 
                   <h1 className="text-gray-900 text-3xl title-font font-medium mb-1">
@@ -281,7 +292,7 @@ export default function Page() {
                       </span>
                     </div>
 
-                    <Button className="flex ml-auto" disabled={addingToCart || addedToCart} onClick={addProductToBag}>
+                    <Button className="flex ml-auto" disabled={addingToCart || addedToCart} onClick={currentUser ? addProductToBag : showToastForLogin}>
                       {
                       addingToCart ?
                       <span className="flex items-center gap-2">Please wait

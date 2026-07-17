@@ -117,8 +117,8 @@
 //   }
 // }
 import { NextResponse } from "next/server";
-import Product from "../../../../models/ProductModel";
-import ConnectDb from "../../../../db/ConnectDb";
+import Product from "../../../../../models/ProductModel";
+import ConnectDb from "../../../../../db/ConnectDb";
 import mongoose from "mongoose";
 
 export async function GET(req, { params }) {
@@ -126,11 +126,21 @@ export async function GET(req, { params }) {
     await ConnectDb();
     console.log("api called here ")
 
-    const { gender } = await params;
+    const { gender,category } = await params;
+    console.log(gender,category)
+    const match = {
+      gender,
+    };  
+    if(category !== "all"){
+      match.category = new mongoose.Types.ObjectId(category);
+    }
+    console.log(match)
+
+ 
 
     let products = await Product.aggregate([
       {
-        $match: { gender },
+        $match: match,
       },
       {
         $lookup:{

@@ -30,7 +30,7 @@ export default function Features() {
   ];
 
   return (
-    <section className="px-4 md:my-12 md:pt-12" >
+    <section className=" px-0 md:px-4my-12 md:pt-12" >
         <h1 className='text-3xl font-bold text-center'>What We Offer</h1>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mt-4" style={{ backgroundColor: "#fcf6f1" }}>
         {features.map((feature, index) => {

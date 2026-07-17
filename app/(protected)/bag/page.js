@@ -49,7 +49,7 @@ function page() {
           <Loader2 className="size-4 animate-spin" />
         </div>
       ) : data && data?.items?.length > 0 ? (
-        <div className="mt-4 md:ml-24 md:mr-24 grid grid-cols-1 items-start justify-center md:grid-cols-3 gap-8">
+        <div className="mt-4 md:ml-24 md:mr-24 grid grid-cols-1 items-start justify-center md:grid-cols-3">
         
         <div className="col-span-2">
           <div>

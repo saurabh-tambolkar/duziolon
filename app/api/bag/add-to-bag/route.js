@@ -40,23 +40,37 @@ export async function POST(req, res) {
         { status: 200 },
       );
     } else {
-        console.log("hello old bag",bag)
-      bag.items.push({
-        productId,
-        variantId,
-        size,
-        price:sizeProd.price,
-        quantity: quantity || 1,
-      });
-      bag.totalAmount =  Number(bag.totalAmount) + Number(sizeProd.price) * Number(quantity || 1);
-      await bag.save();
-      return NextResponse.json(
-        {
-          msg: "Added to bag successfully",
-          success: true,
-        },
-        { status: 200 },
-      );
+        let isProductPresentInBagAlready = bag.items.find((item)=>item.productId == productId && item.variantId == variantId) 
+        if(isProductPresentInBagAlready){
+          isProductPresentInBagAlready.quantity +=1
+           bag.totalAmount =  Number(bag.totalAmount) + Number(isProductPresentInBagAlready.price) 
+           await bag.save();
+          return NextResponse.json(
+            {
+              msg: "Product quantity updated successfully",
+              success: true,
+            },
+            { status: 200 },
+          );
+        }
+        else{
+          bag.items.push({
+            productId,
+            variantId,
+            size,
+            price:sizeProd.price,
+            quantity: quantity || 1,
+          });
+          bag.totalAmount =  Number(bag.totalAmount) + Number(sizeProd.price) * Number(quantity || 1);
+          await bag.save();
+          return NextResponse.json(
+            {
+              msg: "Added to bag successfully",
+              success: true,
+            },
+            { status: 200 },
+          );
+        }
     }
   } catch (error) {
     console.log(error)

@@ -193,7 +193,7 @@ function Navbar() {
               <Link href={"/orders"}   onClick={() => setMenuIsOpen(false)}>
               <p>Orders</p>
               </Link>
-             <Link href="/bag" className=" mt-2 relative">
+             <Link href="/bag" onClick={() => setMenuIsOpen(false)} className=" mt-2 relative">
           <Handbag size={24} />
             <Badge className="absolute -top-2 -right-3 rounded-full text-xs pl-2 pr-2">{bagLength || 0}</Badge>
           </Link>

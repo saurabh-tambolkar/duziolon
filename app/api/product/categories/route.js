@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import ConnectDb from "../../../db/ConnectDb";
 import Categories from "../../../models/CategoriesModel";
 
-export async function POST(req,res){
+export async function GET(req,res){
     try {
         await ConnectDb();
         console.log("hello")

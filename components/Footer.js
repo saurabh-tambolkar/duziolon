@@ -8,9 +8,9 @@ function Footer() {
 
   return (
     <div
-      className={`bg-black ${url.includes("admin") ? "hidden" : "block"} border-t-2 text-white border-gray-200 shadow-[0_-4px_10px_rgba(0,0,0,0.15)] mt-12 pt-6`}
+      className={`bg-white ${url.includes("admin") ? "hidden" : "block"} border-t-2 text-black mt-24 border-gray-200 shadow-[0_-4px_10px_rgba(0,0,0,0.15)] pt-6`}
     >
-      <div className="grid grid-cols-1 md:grid-cols-4 place-items-center">
+      <div className="grid grid-cols-2 gap-8 md:grid-cols-4 place-items-center">
         <div>
           <h2 className="text-2xl font-bold mb-4">Duziolon</h2>
           <p className="text-sm">Designed for comfort.</p>

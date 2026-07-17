@@ -23,7 +23,6 @@ export function UserProvider({ children }) {
     let timer = setTimeout(() => {
       setLoading(false);
     },2000)
-    console.log("3000 done")
     return () => clearTimeout(timer)
   }, []);
 

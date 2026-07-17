@@ -7,7 +7,7 @@ import Link from "next/link";
 function CardItem({ product }) {
 
   return (
-    <Link href={`/products/${product.gender}/${product._id}`} className="bg-white shadow-xl border-1 rounded-md">
+    <Link href={`/products/${product.gender}/${product.category}/${product._id}`} className="block bg-white shadow-xl border rounded-md">
       <Image
       alt="image"
         src={product?.image?.url}

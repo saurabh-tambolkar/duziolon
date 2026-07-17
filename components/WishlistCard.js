@@ -9,6 +9,7 @@ function WishlistCard({item,getWishlist}) {
 
 
     const [loading, setLoading] = useState(false);
+    console.log(item)
     
       const deleteWishlistItem = async (e) => {
         e.preventDefault()
@@ -31,7 +32,7 @@ function WishlistCard({item,getWishlist}) {
       };
 
   return (
-    <Link href={`/products/${item.product.gender}/${item.productId}`} className=' rounded-md border shadow-xl'>
+    <Link href={`/products/${item.product.gender}/${item?.product?.categoryName}/${item.productId}`} className=' rounded-md border shadow-xl'>
         <Image alt='image' src={item.product?.image?.url} height={200} width={200} className="w-full h-40 md:h-60 object-contain"/>
         <div className='p-2'>
             <div className='flex justify-between items-center'>
@@ -50,7 +51,7 @@ function WishlistCard({item,getWishlist}) {
         <IndianRupee className="size-4" />
       <h2 className="font-semibold text-xl">{item?.product.price?.price || "Not added yet!"}</h2>
       </div>
-             <h4>Available in {item?.product?.sizes?.length} sizes</h4>
+             <h4>Available in {item?.product?.sizes?.length} sizes {item.categoryName}</h4>
         </div>
         </Link>
   )
