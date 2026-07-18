@@ -1,41 +1,33 @@
 import { NextResponse } from "next/server";
-import { checkToken } from "../../../../lib/checkToken";
+import ConnectDb from "../../../../db/ConnectDb";
+import Order from "../../../../models/OrderModel";
+import { checkToken } from "../../../../../lib/checkToken";
 import mongoose from "mongoose";
-import Order from "../../../models/OrderModel";
-import ConnectDb from "../../../db/ConnectDb";
 
-export async function POST(req, res) {
+export async function GET(req, { params }) {
   try {
-     await ConnectDb();
-      let userId = checkToken(req);
-      console.log(userId);
-      if(!userId){
-        return NextResponse.json({ "message":"you are unauthorised", success: false }, { status: 401 });
-      }
-    let orders = await Order.aggregate([
-      {
-        $match:{
-          $and:[
-            { userId: new mongoose.Types.ObjectId(userId) },
-            { transactionStatus: "SUCCESS"}
-          ]
-        } 
-      },
-      {
-        $unwind:"$items"
-      },
-      {
-        $lookup: {
-          from: "products",
-          localField: "items.productId",
-          foreignField: "_id",
-          as: "prod",
+    let { orderId } = await params;
+    await ConnectDb()
+
+    let orderDetails = await Order.aggregate([
+        {
+            $match:{_id:new mongoose.Types.ObjectId(orderId)}
         },
-      },
-      {
+        {
+            $unwind:"$items"
+        },
+        {
+            $lookup:{
+                from:'products',
+                localField:"items.productId",
+                foreignField:"_id",
+                as:"prod"
+            }
+        },
+        {
         $unwind: "$prod",
       },
-       {
+        {
         $lookup: {
           from: "variants",
           localField: "items.variantId",
@@ -83,7 +75,7 @@ export async function POST(req, res) {
           },
         },
       },
-      {
+       {
   $lookup: {
     from: "addressmodels", // collection name
     localField: "addressId",
@@ -97,7 +89,7 @@ export async function POST(req, res) {
     preserveNullAndEmptyArrays: true,
   },
 },
-       {
+{
         $group: {
           _id: "$_id",
           userId: { $first: "$userId" },
@@ -106,8 +98,7 @@ export async function POST(req, res) {
           couponCode: { $first: "$couponCode" },
           couponCodeDiscount: { $first: "$couponCodeDiscount" },
           isCouponApplied: { $first: "$isCouponApplied" },
-          expectedDeliveryDate: { $first: "$expectedDeliveryDate" },
-          deliveryDate: { $first: "$deliveryDate" },
+           expectedDeliveryDate: { $first: "$expectedDeliveryDate" },
           orderStatus: { $first: "$status" },
           paymentStatus: { $first: "$paymentStatus" },
           time: { $first: "$updatedAt" },
@@ -129,7 +120,10 @@ export async function POST(req, res) {
       },
     ]);
 
-    return NextResponse.json({ orders,success: true }, { status: 200 });
+    return NextResponse.json(
+      { message: "Order details fetched", success: true,orderDetails },
+      { status: 200 },
+    );
   } catch (error) {
     console.log(error);
     return NextResponse.json({ error, success: false }, { status: 400 });

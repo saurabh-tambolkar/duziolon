@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { type } from "os";
 
 const OrderSchema = new mongoose.Schema(
   {
@@ -37,7 +38,14 @@ const OrderSchema = new mongoose.Schema(
       enum: ["PENDING", "SUCCESS", "FAILED"],
       default: "PENDING",
     },
-
+    expectedDeliveryDate:{
+      type:String,
+      default:null
+    },
+    deliveryDate:{
+      type:String,
+      default:null
+    },
     paymentStatus: {
       type: String,
       default: "PAYMENT_PENDING",

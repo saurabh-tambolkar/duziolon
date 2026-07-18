@@ -1,41 +1,36 @@
 import { NextResponse } from "next/server";
-import { checkToken } from "../../../../lib/checkToken";
+import ConnectDb from "../../../../db/ConnectDb";
+import Order from "../../../../models/OrderModel";
+import InvoicePDF from "../../../../../components/InvoiceTemplate";
+import { pdf } from "@react-pdf/renderer";
+import React from "react";
 import mongoose from "mongoose";
-import Order from "../../../models/OrderModel";
-import ConnectDb from "../../../db/ConnectDb";
 
-export async function POST(req, res) {
-  try {
-     await ConnectDb();
-      let userId = checkToken(req);
-      console.log(userId);
-      if(!userId){
-        return NextResponse.json({ "message":"you are unauthorised", success: false }, { status: 401 });
-      }
-    let orders = await Order.aggregate([
-      {
-        $match:{
-          $and:[
-            { userId: new mongoose.Types.ObjectId(userId) },
-            { transactionStatus: "SUCCESS"}
-          ]
-        } 
-      },
-      {
-        $unwind:"$items"
-      },
-      {
-        $lookup: {
-          from: "products",
-          localField: "items.productId",
-          foreignField: "_id",
-          as: "prod",
+export async function GET(req, { params }) {
+
+    await ConnectDb();
+
+    let {id} = await params;
+
+    const order = await Order.aggregate([
+        {
+            $match:{_id:new mongoose.Types.ObjectId(id)}
         },
-      },
-      {
+        {
+            $unwind:"$items"
+        },
+        {
+            $lookup:{
+                from:'products',
+                localField:"items.productId",
+                foreignField:"_id",
+                as:"prod"
+            }
+        },
+        {
         $unwind: "$prod",
       },
-       {
+        {
         $lookup: {
           from: "variants",
           localField: "items.variantId",
@@ -83,7 +78,7 @@ export async function POST(req, res) {
           },
         },
       },
-      {
+       {
   $lookup: {
     from: "addressmodels", // collection name
     localField: "addressId",
@@ -97,7 +92,7 @@ export async function POST(req, res) {
     preserveNullAndEmptyArrays: true,
   },
 },
-       {
+{
         $group: {
           _id: "$_id",
           userId: { $first: "$userId" },
@@ -106,8 +101,8 @@ export async function POST(req, res) {
           couponCode: { $first: "$couponCode" },
           couponCodeDiscount: { $first: "$couponCodeDiscount" },
           isCouponApplied: { $first: "$isCouponApplied" },
-          expectedDeliveryDate: { $first: "$expectedDeliveryDate" },
-          deliveryDate: { $first: "$deliveryDate" },
+           expectedDeliveryDate: { $first: "$expectedDeliveryDate" },
+           deliveryDate: { $first: "$deliveryDate" },
           orderStatus: { $first: "$status" },
           paymentStatus: { $first: "$paymentStatus" },
           time: { $first: "$updatedAt" },
@@ -128,10 +123,32 @@ export async function POST(req, res) {
         },
       },
     ]);
+    if (order.length == 0 ) {
+      return Response.json(
+        { message: "Order not found" },
+        { status: 404 }
+      );
+    }
 
-    return NextResponse.json({ orders,success: true }, { status: 200 });
-  } catch (error) {
-    console.log(error);
-    return NextResponse.json({ error, success: false }, { status: 400 });
-  }
+    console.log(order)
+
+const instance = pdf(
+  React.createElement(InvoicePDF, { data:order[0] })
+);
+
+const blob = await instance.toBlob();
+
+    return new Response(blob, {
+
+      headers: {
+
+        "Content-Type": "application/pdf",
+
+        "Content-Disposition":
+          `attachment; filename=Duziolon_Invoice-${order[0]._id}.pdf`,
+
+      },
+
+    });
+
 }

@@ -62,10 +62,14 @@ export async function POST(req) {
               { status: 404 },
             );
           } else {
+            const futureDate = new Date();
+            futureDate.setDate(futureDate.getDate() + 7);
+            const isoString = futureDate.toISOString();
             isOrderPresentWithTransId.items = bag.items;
             isOrderPresentWithTransId.transactionStatus = "SUCCESS";
             isOrderPresentWithTransId.paymentStatus = response.data.code;
             isOrderPresentWithTransId.status = "SUCCESS";
+            isOrderPresentWithTransId.expectedDeliveryDate = isoString;
             isOrderPresentWithTransId.amountPaid =
               response.data.data.amount / 100 || bag.totalAmount;
             await isOrderPresentWithTransId.save();

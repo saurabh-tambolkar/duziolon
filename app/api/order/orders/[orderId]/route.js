@@ -106,6 +106,8 @@ export async function GET(req, { params }) {
           couponCode: { $first: "$couponCode" },
           couponCodeDiscount: { $first: "$couponCodeDiscount" },
           isCouponApplied: { $first: "$isCouponApplied" },
+           expectedDeliveryDate: { $first: "$expectedDeliveryDate" },
+           deliveryDate: { $first: "$deliveryDate" },
           orderStatus: { $first: "$status" },
           paymentStatus: { $first: "$paymentStatus" },
           time: { $first: "$updatedAt" },

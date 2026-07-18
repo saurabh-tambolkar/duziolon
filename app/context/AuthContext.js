@@ -34,7 +34,6 @@ export function UserProvider({ children }) {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/sign-in`,
         data,
-        { withCredentials: true },
       );
       // const response = await apiC.post(`/login`,data,{withCredentials:true})
       if (response.data.success) {
@@ -45,7 +44,7 @@ export function UserProvider({ children }) {
           "duziolonRefreshToken",
           response.data.refreshToken,
         );
-        document.cookie = `duziolon=${response.data.accessToken}; max-age=86400; Secure; SameSite=Strict;`;
+        document.cookie = `duziolon=${response.data.accessToken}; max-age=86400; Path=/; Secure; SameSite=Strict;`;
         if (response.data.userDetails.role == "Admin") {
           router.replace("/admin/category");
         } else {
@@ -70,6 +69,10 @@ export function UserProvider({ children }) {
     const refreshToken = localStorage.getItem("duziolonRefreshToken");
     const token = cookieToken || refreshToken;
 
+//     console.log("Cookie Token:", cookieToken);
+// console.log("Refresh Token:", refreshToken);
+// console.log("Using Token:", token);
+
     if (token) {
       refreshTokenFn(token);
     } else {
@@ -91,11 +94,12 @@ export function UserProvider({ children }) {
       );
 
       if (response.data.success) {
+        // console.log(response.data)
         setCurrentUser(response.data.userDetails);
         getBagItemsLength(response.data.userDetails._id)
-        document.cookie = `duziolon=${response.data.accessToken}; max-age=${
-          60 * 60
-        }; Secure; SameSite=Strict; Path=/`;
+        // document.cookie = `duziolon=${response.data.accessToken}; max-age=${
+        //   60 * 60
+        // }; Secure; SameSite=Strict; Path=/`;
       }
     } catch (error) {
       setCurrentUser(null);
@@ -123,6 +127,7 @@ export function UserProvider({ children }) {
     if (typeof window !== "undefined") {
       localStorage.removeItem("duziolonRefreshToken");
     }
+    // localStorage.removeItem("duziolonRefreshToken");
     toast.success("User logged out successfully!");
     setCurrentUser(null);
     document.cookie = "duziolon=; Max-Age=0; path=/;";

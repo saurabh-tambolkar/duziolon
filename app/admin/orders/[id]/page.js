@@ -7,18 +7,35 @@ import {formatDate, getStatusColor, getStatusIcon} from "../../../../components/
 import Image from 'next/image';
 import { Button } from '../../../../components/ui/button';
 import bag from "../../../assets/mainImage.png"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { toast } from 'sonner';
 
 function page({params}) {
 
-    let {orderId} = useParams();
+    let {id} = useParams();
 
     const [data,setData] = useState([])
     const [loading,setLoading] = useState(false)
+    const [saving,setSaving] = useState(false)
+    const [orderStatus, setOrderStatus] = useState("");
+
+useEffect(() => {
+  if (data?.orderStatus) {
+    setOrderStatus(data.orderStatus);
+  }
+}, [data]);
 
     const getOrderDetails = async()=>{
       try {
         setLoading(true)
-        const res = await apiClient.get(`/order/orders/${orderId}`);
+        const res = await apiClient.get(`/order/all-orders/${id}`);
               if (res.data.success) {
                 console.log(res.data.orderDetails)
                 setData(res.data.orderDetails[0])
@@ -30,25 +47,63 @@ function page({params}) {
         setLoading(false)
       }
     }
+    const saveOrderChanges = async()=>{
+      try {
+        setSaving(true)
+        let data = {
+            orderStatus,
+            id
+        }
+        const res = await apiClient.post(`/order/all-orders/change-order-status`,data);
+              if (res.data.success) {
+                console.log(res.data)
+                getOrderDetails()
+                toast.success(res.data.message)
+              };
+      } catch (error) {
+        console.log(error)
+      }
+      finally{
+        setSaving(false)
+      }
+    }
 
     useEffect(()=>{
       getOrderDetails()
     },[])
 
+    let orderStatusOptions = [
+    {
+        name:'Success',
+        value:'SUCCESS',
+    },
+    {
+        name:'Prepared',
+        value:'PREPARED',
+    },
+    {
+        name:'Pending',
+        value:'PENDING',
+    },
+    {
+        name:'Delivered',
+        value:'DELIVERED',
+    },
+    ]
 
   return (
-    <div className="min-h-screen pt-30 mx-auto w-11/12 md:w-10/12 ">
+    <div className="min-h-screen mx-auto w-full">
       {
         loading ?
         <Loader2 className='text-center animate-spin mt-24 mx-auto'/>
         :
-        <>
+        <div className='m-4'>
          <h1 className='text-2xl text-black font-bold'>Order Details</h1>
-        <div className='bg-white shadow-sm border p-4 rounded-lg mt-6 flex justify-between items-baseline'>
+        <div className='bg-white shadow-sm border p-4 rounded-lg mt-6 flex justify-between items-center'>
           <div>
           <h1 className='font-bold text-md'>Order ID: #{data?._id?.slice(-8).toUpperCase()}</h1>
           <h1 className='font-semibold text-sm text-neutral-500 my-2'>Placed On: {formatDate(data?.time)}</h1>
-          <h1 className='font-semibold text-sm text-neutral-500 my-2'>{data?.orderStatus ==" DELIVERED"  ? "Delivered On" : "Expected Delivery" }:  {data?.orderStatus == "DELIVERED" ? formatDate(data?.deliveryDate) : formatDate(data?.expectedDeliveryDate) } </h1>
+          <h1 className='font-semibold text-sm text-neutral-500 my-2'>{data?.orderStatus ==" DELIVERED"  ? "Delivered On" : "Expected Delivery" }:  {formatDate(data?.expectedDeliveryDate)} </h1>
           </div>
          <span
                      className={`flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-bold ${getStatusColor(data?.orderStatus)}`}
@@ -56,6 +111,20 @@ function page({params}) {
                      {getStatusIcon(data?.orderStatus)}
                      {data?.orderStatus}
                    </span>
+                  <Select items={orderStatusOptions} value={orderStatus} onValueChange={setOrderStatus}>
+  <SelectTrigger className="w-[180px]">
+    <SelectValue placeholder="Order Status" />
+  </SelectTrigger>
+  <SelectContent>
+    <SelectGroup>
+      {orderStatusOptions.map((item) => (
+        <SelectItem key={item.value} value={item.value || data.orderStatus}>
+          {item.name}
+        </SelectItem>
+      ))}
+    </SelectGroup>
+  </SelectContent>
+</Select>
         </div>
         <div className='bg-white shadow-sm border p-2 rounded-lg mt-6 gap-4 grid grid-cols-1 md:grid-cols-3'>
           <div className='px-8'>
@@ -100,7 +169,7 @@ function page({params}) {
                   </div>
                   <div className='w-full gap-4'>
                     <div className='flex justify-between'>
-                    <h2 className='text-md font-bold w-2/3 truncate'>{item?.product?.name}</h2>
+                    <h2 className='text-md font-bold'>{item?.product?.name}</h2>
                     <h2 className='text-md font-bold flex '><IndianRupee className='size-4'/>{item?.price}</h2>
                     </div>
                     <div className='flex justify-between mt-2'>
@@ -117,29 +186,31 @@ function page({params}) {
             })
           }
         </div>
-         <div className='bg-white shadow-sm border p-2 md:p-4 rounded-lg mt-6 gap-4 grid grid-cols-1 items-center md:grid-cols-3'>
-          <div className='px-4 md:px-8'>
+         {/* <div className='bg-white shadow-sm border p-4 rounded-lg mt-6 gap-4 grid grid-cols-1 items-center md:grid-cols-3'>
+          <div className='px-8'>
           <h1 className='font-bold text-lg mb-2'>Need Help?</h1>
           <h4 className='text-neutral-500 font-semibold text-sm'>If you have any issue with the order.</h4>
           <h4 className='text-neutral-500 font-semibold text-sm'>You can raise a request</h4>
           <Button className=' mt-1 md:mt-4 border-1 shadow w-full bg-white text-black font-bold hover:bg-gray-200'>Raise a Request</Button>
           </div>
-          <div className='px-4 md:px-8'>
+          <div className='px-8'>
           <h1 className='font-bold text-lg mb-2'>View Invoice</h1>
           <h4 className='text-neutral-500 font-semibold text-sm'>Download your Order Invoice</h4>
           <h4 className='text-neutral-500 font-semibold text-sm'>for this purchase</h4>
-          <Button className='mt-1 md:mt-4 border-1 w-full shadow bg-white text-black font-bold hover:bg-gray-200' onClick={()=>{
-window.open(
-`${process.env.NEXT_PUBLIC_API_BASE_URL}/order/invoice/${data._id}`
-)
-}}>Download Invoice</Button>
+          <Button className='mt-1 md:mt-4 border-1 w-full shadow bg-white text-black font-bold hover:bg-gray-200'>Download Invoice</Button>
           </div>
           <div className='hidden md:block mx-auto'>
          <Image src={bag} alt={"invoice"} width={200} height={240} className='h-30  object-contain rounded-lg'/>
                         
           </div>
+         </div> */}
+         <div className='mt-4 flex justify-end'>
+        <Button onClick={saveOrderChanges} disabled={saving}>{saving ? <>
+            <p>Saving</p>
+            <Loader2 className='animate-spin size-5'/>
+        </>:"Save"}</Button>
          </div>
-        </>
+        </div>
       }
     </div>
   )
