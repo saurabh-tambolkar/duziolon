@@ -48,7 +48,7 @@ function page({params}) {
           <div>
           <h1 className='font-bold text-md'>Order ID: #{data?._id?.slice(-8).toUpperCase()}</h1>
           <h1 className='font-semibold text-sm text-neutral-500 my-2'>Placed On: {formatDate(data?.time)}</h1>
-          <h1 className='font-semibold text-sm text-neutral-500 my-2'>{data?.orderStatus ==" DELIVERED"  ? "Delivered On" : "Expected Delivery" }:  {data?.orderStatus == "DELIVERED" ? formatDate(data?.deliveryDate) : formatDate(data?.expectedDeliveryDate) } </h1>
+          <h1 className='font-semibold text-sm text-neutral-500 my-2'>{data?.orderStatus =="DELIVERED"  ? "Delivered On" : "Expected Delivery" }:  {data?.orderStatus == "DELIVERED" ? formatDate(data?.deliveryDate) : formatDate(data?.expectedDeliveryDate) } </h1>
           </div>
          <span
                      className={`flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-bold ${getStatusColor(data?.orderStatus)}`}
