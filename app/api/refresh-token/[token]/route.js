@@ -25,7 +25,7 @@ export async function GET(req, { params }) {
         { status: 401 }
       );
     }
-    let id = decoded.userId.id;
+    let id = decoded.user.id;
     const verifiedUser = await User.findById(id);
     if (!verifiedUser) {
       return NextResponse.json(
