@@ -36,7 +36,7 @@ apiClient.interceptors.response.use(function(response){
         return (async()=>{
             try{
                 const refreshToken=localStorage.getItem('refreshToken')
-                const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/refresh/${refreshToken}`);
+                const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/refresh-token/${refreshToken}`);
                 console.log(data)
                 document.cookie=`duziolon=${data.accessToken}; max-age=${60*60}; Path=/; Secure; SameSite=Strict;`
                 
