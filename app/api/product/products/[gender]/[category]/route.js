@@ -120,6 +120,7 @@ import { NextResponse } from "next/server";
 import Product from "../../../../../models/ProductModel";
 import ConnectDb from "../../../../../db/ConnectDb";
 import mongoose from "mongoose";
+import redis from "../../../../../../lib/redis"
 
 export async function GET(req, { params }) {
   try {
@@ -127,6 +128,29 @@ export async function GET(req, { params }) {
     console.log("api called here ")
 
     const { gender,category } = await params;
+
+    const cacheKey = `products:${gender}:${category}`;
+
+    let cachedProducts = await redis.get(cacheKey);
+    cachedProducts = JSON.parse(cachedProducts)
+
+    if(cachedProducts){
+      console.log("sending from redis",cachedProducts.length)
+       return NextResponse.json(
+      {
+        message: "Products fetched successfully",
+        products:cachedProducts,
+        gender,
+        totalProducts: cachedProducts.length,
+        success: true,
+        source:"Redis"
+      },
+      { status: 200 }
+    );
+    }
+
+    console.log("Redis Cache MISS:", cacheKey);
+
     console.log(gender,category)
     const match = {
       gender,
@@ -233,6 +257,13 @@ export async function GET(req, { params }) {
       },
     ]);
 
+    await redis.set(
+      cacheKey,
+      JSON.stringify(products),
+      "EX",
+      300
+    )
+
     return NextResponse.json(
       {
         message: "Products fetched successfully",
@@ -240,6 +271,7 @@ export async function GET(req, { params }) {
         gender,
         totalProducts: products.length,
         success: true,
+        source:"MongoDb"
       },
       { status: 200 }
     );

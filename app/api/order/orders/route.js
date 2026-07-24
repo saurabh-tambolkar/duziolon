@@ -3,14 +3,27 @@ import { checkToken } from "../../../../lib/checkToken";
 import mongoose from "mongoose";
 import Order from "../../../models/OrderModel";
 import ConnectDb from "../../../db/ConnectDb";
+import redis from "@/lib/redis"
 
 export async function POST(req, res) {
   try {
      await ConnectDb();
       let userId = checkToken(req);
       console.log(userId);
+      let cacheKey = `orders:${userId}`
+
+      let cachedOrders = await redis.get(cacheKey)
+      cachedOrders  = JSON.parse(cachedOrders)
+
+      if(cachedOrders){
+        console.log("sending orders from redis")
+         return NextResponse.json({ orders:cachedOrders,success: true,source:"Redis" }, { status: 200 });
+      }
+
+      console.log("cache miss",userId)
+
       if(!userId){
-        return NextResponse.json({ "message":"you are unauthorised", success: false }, { status: 401 });
+        return NextResponse.json({ "message":"you are unauthorised", success: false, }, { status: 401 });
       }
     let orders = await Order.aggregate([
       {
@@ -129,7 +142,14 @@ export async function POST(req, res) {
       },
     ]);
 
-    return NextResponse.json({ orders,success: true }, { status: 200 });
+    await redis.set(
+      cacheKey,
+      JSON.stringify(orders),
+      "EX",
+      300
+    )
+
+    return NextResponse.json({ orders,success: true,source:"Mongodb"}, { status: 200 });
   } catch (error) {
     console.log(error);
     return NextResponse.json({ error, success: false }, { status: 400 });

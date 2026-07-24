@@ -2,15 +2,13 @@ import Link from "next/link";
 import CardItem from "../../../../components/CardItem";
 import CatLabels from "../../../../components/CatLabels";
 
-// export const revalidate = 60; // cache for 60 seconds
+export const revalidate = 60; // cache for 60 seconds
 
 export default async function Page({params}) {
   let {gender,category} = await params;
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/products/${gender}/${category}`,{
-  cache: "no-cache"
-});
-  const data = await res.json();
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/products/${gender}/${category}`);
+const data = await res.json();
 
   const resCat = await fetch(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/categories`,{
