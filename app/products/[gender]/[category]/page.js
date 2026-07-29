@@ -17,7 +17,7 @@ const data = await res.json();
 let catData = await resCat.json()
 
   return (
-    <div className="min-h-screen pt-30 mx-auto w-11/12">
+    <div className="min-h-screen pt-30 mx-auto w-11/12 ">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
       <h1 className='text-2xl text-black font-bold'>{gender.slice(0,1).toLocaleUpperCase()+gender.slice(1)} Fashion</h1>
       <CatLabels categories={catData.categories}/>

@@ -1,5 +1,10 @@
 import mongoose from "mongoose";
 import { NextResponse } from "next/server";
+import dns from "dns"
+dns.setServers([
+    '1.1.1.1',
+    '8.8.8.8'
+])
 
 let ConnectDb=async()=>{
     if(mongoose.connection.readyState >= 1){

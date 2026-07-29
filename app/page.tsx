@@ -11,7 +11,7 @@ import Link from "next/link";
 
 function page() {
   return (
-    <div className="bg-white min-h-screen ">
+    <div className="bg-white min-h-screen">
       <HomeMain/>
       <Features/>
       <HomeCarousel/>

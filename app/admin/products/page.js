@@ -215,7 +215,7 @@ export default function DataTableDemo() {
      const getCategories = async () => {
         try {
           setLoading(true)
-          const res = await axios.post(
+          const res = await axios.get(
             `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/categories`
           )
           console.log(res.data.products)

@@ -62,7 +62,7 @@ function Navbar() {
   return (
     <nav
       className={`${url.includes("admin") ? "hidden" : "block"} w-full border-b-2 shadow-sm fixed top-0 backdrop-blur-md transition-all duration-300 z-50 
-      ${blur ? "bg-white/70 shadow-lg border-b border-gray-200" : "bg-white"}
+      ${blur ? "bg-white/10 shadow-lg border-b border-gray-200" : "bg-white/20"}
       flex justify-between md:justify-around items-center p-6`}
     >
       <h1

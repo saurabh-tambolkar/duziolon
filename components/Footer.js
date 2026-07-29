@@ -19,11 +19,11 @@ function Footer() {
         </div>
         <div className="flex flex-col">
           <h2 className="text-lg font-semibold mb-4">Shop</h2>
-            <Link href="/products/mens" className="hover:underline">
+            <Link href="/products/mens/all" className="hover:underline">
               Men's Clothing
             </Link>
             <Link
-              href="/products/womens"
+              href="/products/womens/all"
               className="hover:underline
 "
             >
@@ -60,7 +60,7 @@ function Footer() {
             </Link>
         </div>
       </div>
-      <p className="text-center text-gray-100 text-sm mt-8">
+      <p className="text-center font-semibold text-gray-500 text-sm mt-8 pb-4">
         Duziolon @ copyright 2025
       </p>
     </div>

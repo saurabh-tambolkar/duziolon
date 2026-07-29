@@ -3,6 +3,7 @@
 import HomeCarouselClient from "./Caraosel";
 
 export default async function HomeCarousel() {
+  console.log(process.env.NEXT_PUBLIC_API_BASE_URL)
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/products/mens/all`,
     {

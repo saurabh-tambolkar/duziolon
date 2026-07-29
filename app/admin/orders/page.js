@@ -87,7 +87,7 @@ export const columns = [
         {
           dataOfImages && dataOfImages.map((item,index)=>{
             return(
-              <Image key={index} src={item.product.image.url} height={100} width={100} className="h-10 w-10 rounded object-contain"/>
+              <Image alt="image" key={index} src={item.product.image.url} height={100} width={100} className="h-10 w-10 rounded object-contain"/>
             )
           })
         }
