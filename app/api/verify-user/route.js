@@ -23,18 +23,18 @@ export async function POST(req, res) {
         await existingUser.save();
         return NextResponse.json({
           message: "Account has been verified successfully",
-          success: 204,
-        });
+          success: true,
+        },{status:201});
       } else if (!isCodeNotExpired) {
         return NextResponse.json({
           message: "Code is expired , please signup to get new code.",
           success: false,
-        });
+        },{status:400});
       } else {
         return NextResponse.json({
-          message: "Code is invalid , please signup to get new code.",
+          message: "Code is invalid , Please request a new one.",
           success: false,
-        });
+        },{status:400});
       }
     }
   } catch (error) {

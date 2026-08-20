@@ -69,7 +69,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 
-export const columns = [
+const columns = [
   {
     id: "image",
     header: "",

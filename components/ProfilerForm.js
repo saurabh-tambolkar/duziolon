@@ -8,6 +8,7 @@ import {
   Trash2,
   Loader2,
   PlusIcon,
+  Ticket,
 } from "lucide-react";
 import Image from "next/image";
 import noAddress from "../app/assets/noAddress.png";
@@ -42,14 +43,17 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { stateInfo } from "../lib/stateDistrict";
+import Link from "next/link";
 
 function ProfilerForm({ activeForm }) {
   const getUserHeaderTitle = () => {
     switch (activeForm) {
-      case "personal":
+      case "profile":
         return "Personal Information";
       case "address":
         return "Your Addresses";
+      case "tickets":
+        return "Your Tickets";
       case "payment":
         return "Payment Methods";
     }
@@ -57,10 +61,12 @@ function ProfilerForm({ activeForm }) {
 
   const getUserSection = () => {
     switch (activeForm) {
-      case "personal":
+      case "profile":
         return "Personal Information";
       case "address":
         return <Addresses title={getUserHeaderTitle()} />;
+      case "tickets":
+        return <Tickets title={getUserHeaderTitle()} />;
       case "payment":
         return "Payment Methods";
     }
@@ -177,11 +183,11 @@ function Addresses({ title }) {
 
   const selectedStateEdit = editForm.watch("state");
 
-const selectedStateDataEdit = stateInfo.find(
-  (item) => item.state === selectedStateEdit
-);
+  const selectedStateDataEdit = stateInfo.find(
+    (item) => item.state === selectedStateEdit,
+  );
 
-const districtsEdit = selectedStateDataEdit?.districts || [];
+  const districtsEdit = selectedStateDataEdit?.districts || [];
 
   const onSubmit = async (values) => {
     try {
@@ -204,7 +210,10 @@ const districtsEdit = selectedStateDataEdit?.districts || [];
     try {
       console.log(values);
       setIsSubmitting(true);
-      const response = await apiClient.post(`/address/address/${editAddress._id}`, values);
+      const response = await apiClient.post(
+        `/address/address/${editAddress._id}`,
+        values,
+      );
       if (response.data.success) {
         toast.success(response.data.message);
         getAddress();
@@ -227,7 +236,10 @@ const districtsEdit = selectedStateDataEdit?.districts || [];
           </DialogHeader>
 
           <Form {...editForm}>
-            <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-5">
+            <form
+              onSubmit={editForm.handleSubmit(onEditSubmit)}
+              className="space-y-5"
+            >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Flat */}
                 <FormField
@@ -350,12 +362,12 @@ const districtsEdit = selectedStateDataEdit?.districts || [];
                         </FormControl>
 
                         <SelectContent>
-  {districtsEdit.map((district) => (
-    <SelectItem key={district} value={district}>
-      {district}
-    </SelectItem>
-  ))}
-</SelectContent>
+                          {districtsEdit.map((district) => (
+                            <SelectItem key={district} value={district}>
+                              {district}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
                       </Select>
 
                       <FormMessage />
@@ -413,7 +425,10 @@ const districtsEdit = selectedStateDataEdit?.districts || [];
         <h1 className="text-2xl font-bold">{title}</h1>
         <Dialog>
           <DialogTrigger asChild>
-            <Button><PlusIcon/> <span className="hidden md:block">Add New Address</span></Button>
+            <Button>
+              <PlusIcon />{" "}
+              <span className="hidden md:block">Add New Address</span>
+            </Button>
           </DialogTrigger>
 
           <DialogContent onOpenAutoFocus={(e) => e.preventDefault()}>
@@ -672,7 +687,7 @@ const districtsEdit = selectedStateDataEdit?.districts || [];
                   variant="outline"
                   onClick={() => {
                     setEditAddress(item);
-                    console.log(item)
+                    console.log(item);
 
                     editForm.reset({
                       flat: item.flat,
@@ -719,6 +734,96 @@ const districtsEdit = selectedStateDataEdit?.districts || [];
             width={200}
             height={200}
           />
+        </div>
+      )}
+    </div>
+  );
+}
+
+ export const getStatusStyles = (status) => {
+    switch (status) {
+      case "open":
+        return "bg-green-100 text-green-800 text-sm border-green-600 border-2";
+      case "in-process":
+        return "bg-amber-100 text-amber-800 text-sm border-amber-600 border-2";
+      case "closed":
+        return "bg-red-100 text-red-800 text-sm border-red-600 border-2";
+    }
+  };
+
+function Tickets({ title }) {
+  let [tickets, setTickets] = useState([]);
+  let [loading, setLoading] = useState(false);
+
+  let getTickets = async () => {
+    try {
+      setLoading(true);
+      let result = await apiClient.get("/tickets/tickets");
+      if (result.data.success) {
+        setTickets(result.data.tickets);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getTickets();
+  }, []);
+
+ 
+
+  return (
+    <div>
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold">{title}</h1>
+      </div>
+      {loading ? (
+        <Loader2 className="animate-spin size-4 text-center m-12" />
+      ) : (
+        <div>
+          {tickets && tickets.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+              {tickets.map((item) => {
+                return (
+                  <Link
+                    href={`/tickets/${item._id}`}
+                    key={item._id}
+                    className="relative rounded-2xl border border-gray-200 bg-white p-2 shadow-sm hover:shadow-lg transition-all duration-300"
+                  >
+                    <div className="flex justify-between items-center">
+                      <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100">
+                        <Ticket className="text-gray-700" size={24} />
+                      </div>
+                      <p
+                        className={`${getStatusStyles(item.status)} px-4 rounded-full`}
+                      >
+                        {item?.status?.charAt(0).toUpperCase() + item?.status?.slice(1)}
+                      </p>
+                    </div>
+                    <h1 className="text-gray-600 my-2 font-bold text-sm truncate">
+                      Ticket ID: {item._id}
+                    </h1>
+                    <h1 className="text-black font-bold text-md truncate">
+                      {item.subject}
+                    </h1>
+                    <p className="text-gray-500 text-sm line-clamp-2 overflow-hidden">
+                      {item.description}
+                    </p>
+                    <p className="text-gray-500 mt-2 text-xs line-clamp-2 overflow-hidden">
+                      {item.createdAt.split("T")[0]}
+                    </p>
+                  </Link>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="text-center text-sm text-gray-400 mt-12">
+              No tickets found
+            </p>
+          )}
         </div>
       )}
     </div>

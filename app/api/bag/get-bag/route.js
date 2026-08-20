@@ -9,6 +9,8 @@ export async function POST(req, res) {
      await ConnectDb();
     let userId = checkToken(req);
     console.log(userId);
+
+
     let bag = await Bag.aggregate([
       {
         $match: { userId: new mongoose.Types.ObjectId(userId) },

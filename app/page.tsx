@@ -8,6 +8,7 @@ import HomeMain from "../components/HomeMain";
 import HomeCarousel from "../components/HomeCarousel";
 import CategoryCard from "../components/CategoryCard";
 import Link from "next/link";
+import ChatRemote from "../components/ChatRemote";
 
 function page() {
   return (

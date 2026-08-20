@@ -4,7 +4,10 @@ import axios from "axios";
 import { checkToken } from "../../../../../lib/checkToken";
 import Bag from "../../../../models/BagModel";
 import Order from "../../../../models/OrderModel";
+import User from "../../../../models/UserModel";
 import ConnectDb from "../../../../db/ConnectDb";
+import { publishKafkaEvent } from "../../../../../lib/kafkaevents";
+import redis from "@/lib/redis";
 
 export async function POST(req) {
   try {
@@ -20,8 +23,12 @@ export async function POST(req) {
         { status: 401 },
       );
     } else {
-      // console.log("Status API called", id, Date.now());
-      // console.log("saurabh",id)
+      let user = await User.findById(userId);
+
+       let cacheKey = `orders:${userId}`
+       await redis.del(cacheKey)
+
+      console.log("user", user);
       let isOrderPresentWithTransId = await Order.findOne({
         transactionId: id,
       });
@@ -74,6 +81,19 @@ export async function POST(req) {
               response.data.data.amount / 100 || bag.totalAmount;
             await isOrderPresentWithTransId.save();
             await Bag.findByIdAndDelete({ _id: bag._id });
+            await publishKafkaEvent({
+              topic: "order-placed",
+              event: "ORDER_PLACED",
+              key: isOrderPresentWithTransId._id,
+              data: {
+                orderId: String(isOrderPresentWithTransId._id),
+                name: user.name,
+                email: user.email,
+                userId: String(userId),
+                amount: response.data.data.amount / 100 || bag.totalAmount,
+                expectedDeliveryDate: isoString,
+              },
+            });
             return NextResponse.json(
               {
                 status: response.data.code,

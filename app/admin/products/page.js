@@ -73,7 +73,7 @@ const formSchema = z.object({
 
 
 
-export const columns = [
+const columns = [
   {
     accessorKey: "image",
     header: "",

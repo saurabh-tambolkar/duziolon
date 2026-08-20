@@ -8,6 +8,7 @@ import { Loader2 } from "lucide-react";
 import { getCookie } from "@/lib/getCookie";
 import Image from "next/image";
 import mainImg from "../assets/mainImage.png";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 const UserContext = createContext();
 
@@ -17,6 +18,7 @@ export function UserProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [loadingAuth, setLoadingAuth] = useState(true);
   const [bagLength, setBagLength] = useState(0);
+  const [errorMessageToShow, setErrorMessageToShow] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -55,9 +57,17 @@ export function UserProvider({ children }) {
       }
     } catch (error) {
       console.log(error);
-      const errorMessage =
-        error.response?.data?.message || "An unexpected error occurred.";
-      toast.error(errorMessage);
+      const responseData = error.response?.data;
+      const errorMessage = responseData.message || "An unexpected error occurred.";
+      if(responseData.isVerified === false){
+        router.replace("/verify-user")
+        localStorage.setItem("email",data.email)
+        toast.error(errorMessage)
+      }
+      else{
+        setErrorMessageToShow(errorMessage)
+        toast.error(errorMessage);
+      }
     } finally {
       setIsSubmitting(false);
       // setLoadingAuth(false);
@@ -136,8 +146,16 @@ export function UserProvider({ children }) {
   if (loading) {
     return (
       <div className=" flex flex-col justify-center items-center min-h-screen">
-        <Image src={mainImg} alt="Main Image" className="h-50 w-50 md:h-100 md:w-100" height={100} width={400}/>
-        <Loader2 className="animate-spin size-6 mt-4" />
+        <Image loading="eager" src={mainImg} alt="Main Image" className="h-50 w-50 md:h-100 md:w-100" height={'auto'} width={'auto'}/>
+        {/* <Loader2 className="animate-spin size-6 mt-4" /> */}
+        <div className="md:w-1/2 w-full h-40">
+  <DotLottieReact
+    rel="preload"
+    src="https://lottie.host/8f2659e7-a232-44af-8509-4ff77cf5a4a5/T2mH46bpr7.lottie"
+    autoplay
+    loop={true}
+  />
+</div>
       </div>
     );
   }
@@ -163,6 +181,7 @@ export function UserProvider({ children }) {
         getBagItemsLength,
         bagLength,
         setBagLength,
+        errorMessageToShow
       }}
     >
       {children}

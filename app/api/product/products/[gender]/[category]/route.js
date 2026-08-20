@@ -125,7 +125,7 @@ import redis from "../../../../../../lib/redis"
 export async function GET(req, { params }) {
   try {
     await ConnectDb();
-    console.log("api called here ")
+    // console.log("api called here ")
 
     const { gender,category } = await params;
 

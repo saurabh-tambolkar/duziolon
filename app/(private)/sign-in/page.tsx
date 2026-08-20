@@ -29,7 +29,7 @@ const formSchema = z.object({
 export default function Page() {
 
 
-  const {login,isSubmitting} = useUser();
+  const {login,isSubmitting,errorMessageToShow} = useUser();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -80,6 +80,11 @@ export default function Page() {
           <div className="ml-auto">
           <Link href={'/forgot-password'} className="text-xs text-gray-600 font-bold w-full mb-8 text-center">Forgot Password?</Link>
           </div>
+
+          {
+            errorMessageToShow && 
+            <p className="text-xs font-bold text-red-500">{errorMessageToShow}</p>
+          }
 
           {/* <Button type="submit" className="w-full bg-black hover:bg-gray-900 text-white">Login</Button> */}
           <Button type="submit" className="w-full bg-black hover:bg-gray-900 text-white" disabled={isSubmitting}>

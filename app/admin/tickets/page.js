@@ -10,27 +10,10 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 import { ArrowUpDown, ChevronDown, Loader2, MoreHorizontal, MoreVertical } from "lucide-react"
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {toast} from "sonner"
 
 
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -53,103 +36,66 @@ import { useState } from "react"
 import axios from "axios"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
 import z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import Image from "next/image"
-
-const formSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  description: z.string().min(2, "Description must be at least 2 characters"),
-  category: z.string(),
-  gender: z.string(),
-})
+import { getStatusStyles } from "../../../components/ProfilerForm"
+import Link from "next/link"
 
 
 
 const columns = [
-  {
-    accessorKey: "image",
-    header: "",
-    cell: ({ row }) => {
-      let dataOfImages = row.original.items
-      console.log(dataOfImages)
-      return(
-        <div className="flex gap-2">
-        {
-          dataOfImages && dataOfImages.map((item,index)=>{
-            return(
-              <Image alt="image" key={index} src={item.product.image.url} height={100} width={100} className="h-10 w-10 rounded object-contain"/>
-            )
-          })
-        }
-        </div>
-      )
-    },
-  },
 {
   accessorKey: "userName",
   header: "Name",
   cell: ({ row }) => (
     <div className="font-bold text-sm">
-      {row.original.userName}
+      {row.original.user.name}
     </div>
   ),
 },
 {
-  accessorKey: "totalAmount",
-  header: "Amount Paid",
+  accessorKey: "Order",
+  header: "Order",
   cell: ({ row }) => (
-    <div className="lowercase flex gap-2">
-      <p className={`text-sm font-semibold ${row.original.totalAmountPaid !== row.original.totalAmount ? "text-red-500" : "text-green-600"}`}>
-      {row.original.totalAmount}
-      </p>
-      <p className={`text-sm font-semibold ${row.original.totalAmountPaid == row.original.totalAmount ? "hidden" :"text-green-500"} `}>
-      {row.original.totalAmountPaid}
-      </p>
-    </div>
+     <Link href={`/admin/orders/${row.original.orderId}`} className="font-bold text-sm text-blue-500">
+      {row.original.orderId}
+    </Link>
   ),
 },
 {
-  accessorKey: "time",
-  header: "Ordered On",
+  accessorKey: "Subject",
+  header: "Subject",
   cell: ({ row }) => (
-    <div className="lowercase">
-      {row.original.time?.split('T')[0]}
+     <p>
+      {row.original.subject}
+    </p>
+  ),
+},
+{
+  accessorKey: "phone",
+  header: "Phone",
+  cell: ({ row }) => (
+     <div className="font-bold text-sm">
+      {row.original.user.phone}
     </div>
   ),
 },
 {
-    accessorKey:'variantsCount',
-    header:"Total Items",
-      cell: ({ row }) => (
-    <div className="lowercase">
-      {row.original?.items.length}
+  accessorKey: "status",
+  header: "Status",
+  cell: ({ row }) => (
+    <div className={`lowercase text-center ${getStatusStyles(row.original.status)} rounded-full`}>
+      {row.original.status}
     </div>
   ),
 },
 {
-    accessorKey:'orderStatus',
-    header:"Order Status",
-      cell: ({ row }) => (
-    <div className="lowercase">
-      {row.original?.orderStatus}
-    </div>
-  ),
-},
-{
-    accessorKey:'paymentStatus',
-    header:"Payment Status",
-      cell: ({ row }) => (
-    <div className="lowercase">
-      {row.original?.paymentStatus}
+  accessorKey: "createdAt",
+  header: "Created On",
+  cell: ({ row }) => (
+    <div className={`lowercase`}>
+      {row.original.createdAt.split("T")[0]}
     </div>
   ),
 },
@@ -172,7 +118,7 @@ const columns = [
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
               onClick={() =>
-                table.options.meta?.goToViewOrder(row.original)
+                table.options.meta?.goToChatTicket(row.original)
               }
             >
               View
@@ -194,15 +140,9 @@ export default function DataTableDemo() {
   const [rowSelection, setRowSelection] = React.useState({})
 
   const router = useRouter();
-
-  const form = useForm({
-    resolver:zodResolver(formSchema),
-    defaultValues: { name: "",description:'',gender:'',category:'' },
-  })
-
-  let goToViewOrder=(a)=>{
-    console.log(a)
-    router.push(`/admin/orders/${a._id}`)
+  let goToChatTicket=(a)=>{
+    // console.log(a)
+    router.push(`/admin/tickets/${a._id}`)
   }
 
   const [loading,setLoading] = useState(false)
@@ -210,14 +150,14 @@ export default function DataTableDemo() {
     const [cats,setCats] = useState([])
     const [isSubmitting, setIsSubmitting] = useState(false)
 
-     const getOrders = async () => {
+     const getTickets = async () => {
         try {
           setLoading(true)
           const res = await axios.get(
-            `${process.env.NEXT_PUBLIC_API_BASE_URL}/order/all-orders`
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}/tickets/get-admin-tickets`
           )
-          console.log(res.data.allOrders)
-          if (res.data.success) setData(res.data.allOrders)
+          console.log("admin",res.data.tickets)
+          if (res.data.success) setData(res.data.tickets)
         } catch (err) {
           console.error(err)
         } finally {
@@ -226,7 +166,7 @@ export default function DataTableDemo() {
       }
    
       React.useEffect(()=>{
-        getOrders();
+        getTickets();
       },[])
 
   const table = useReactTable({
@@ -247,7 +187,7 @@ export default function DataTableDemo() {
       rowSelection,
     },
     meta:{
-        goToViewOrder,
+        goToChatTicket,
     }
   })
 
@@ -258,39 +198,18 @@ export default function DataTableDemo() {
         </div>
     )
   }
-
-  const onSubmit = async (value) => {
-    console.log(value)
-    try {
-      setIsSubmitting(true);
-     
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/create-product`,
-        value,
-      );
-      if (response.data.success) {
-        toast.success(response.data.message);
-        getOrders();
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
-
   return (
     <div className="w-full min-h-screen p-12">
         <div className="flex justify-between mb-6">
-                <h1 className="text-xl font-semibold">Orders</h1>
-                 <Input
+                <h1 className="text-xl font-semibold">Tickets</h1>
+                 {/* <Input
           placeholder="Filter products"
         //   value={table.getColumn("email")?.getFilterValue() ?? ""}
         //   onChange={(e) =>
             // table.getColumn("email")?.setFilterValue(e.target.value)
         //   }
           className="max-w-sm"
-        />
+        /> */}
          {/* <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="">
