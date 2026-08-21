@@ -119,24 +119,6 @@ export default function Page() {
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
 
-  // const getUsersList = async () => {
-  //   try {
-  //     setLoading(true);
-  //     const res = await axios.get(
-  //       `${process.env.NEXT_PUBLIC_API_BASE_URL}/users`,
-  //     );
-  //     if (res.data.success) setUsers(res.data.users);
-  //   } catch (err) {
-  //     console.error(err);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   getUsersList();
-  // }, []);
-
   const table = useReactTable({
     data: users,
     columns,
@@ -167,7 +149,13 @@ export default function Page() {
   }, [debouncedSearch]);
   
 
-  if (loading) return <Loader2 className="animte-spin p-10 text-center"/>;
+  // if(loading){
+  //   return(
+  //       <div className="min-h-screen w-full justify-center items-center">
+  //           <Loader2 className="animate-spin"/>
+  //       </div>
+  //   )
+  // }
 
   return (
     <div className="p-12 w-full min-h-screen">
@@ -198,7 +186,11 @@ export default function Page() {
           }
           </div>
       </div>
-
+{
+  loading 
+  ?
+   <Loader2 className="animate-spin"/>
+   :
       <div className="border rounded-md w-full">
         <Table>
           <TableHeader>
@@ -216,13 +208,6 @@ export default function Page() {
           
             <TableBody>
               {
-
-            loading
-            ?
-            <TableRow>
-              <Loader2 className="animate-spin py-4 size-4"/>
-            </TableRow>  
-            :
             table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id}>
@@ -247,6 +232,8 @@ export default function Page() {
 
         </Table>
       </div>
+}
+
     </div>
   );
 }
