@@ -41,7 +41,8 @@ export default function AdminLayout({ children }) {
             <Link href={"/admin/coupons"} className={`${url.includes('coupons') && "font-bold bg-white text-black rounded p-1"}`}>Coupons</Link>
             <Link href={"/admin/orders"} className={`${url.includes('orders') && "font-bold bg-white text-black rounded p-1"}`}>Orders</Link>
             <Link href={"/admin/tickets"} className={`${url.includes('tickets') && "font-bold bg-white text-black rounded p-1"}`}>Tickets</Link>
-            <Link href={"/admin/dashboard"}>Users</Link>
+            <Link href={"/admin/users"} className={`${url.includes('users') && "font-bold bg-white text-black rounded p-1"}`}>Users</Link>
+            {/* <Link href={"/admin/dashboard"}>Users</Link> */}
         </div>
       </div>
       
