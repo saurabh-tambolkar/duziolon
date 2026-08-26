@@ -29,8 +29,10 @@ function BagItemCard({item,getBagItems}) {
         }
       };
 
+      console.log(item)
+
   return (
-    <Link href={`/products/${item.product?.gender}/${item.productId}`} className=' flex mb-2 justify-start items-center rounded-md border shadow-md gap-8'>
+    <Link href={`/products/${item.product?.gender}/${item.product?.category}/${item.productId}`} className=' flex mb-2 justify-start items-center rounded-md border shadow-md gap-8'>
         <Image alt='image' src={item.product?.image?.url} height={200} width={200} className="w-60 h-40 md:h-40 md:w-100 object-contain"/>
         <div className='p-2 w-full'>
             <div className='flex justify-between w-full items-center mb-4'>

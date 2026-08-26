@@ -41,6 +41,17 @@ export async function POST(req, res) {
         $unwind: "$variant",
       },
       {
+        $lookup: {
+          from: "categories",
+          localField: "prod.category",
+          foreignField: "_id",
+          as: "cat",
+        },
+      },
+      {
+        $unwind: "$cat",
+      },
+      {
   $lookup: {
     from: "sizes",
     let: {
@@ -100,6 +111,8 @@ export async function POST(req, res) {
             name: "$prod.name",
             description: "$prod.description",
             color: "$variant.color",
+            gender: "$prod.gender",
+            category: "$cat.category",
             price: "$size.price",
             image:{
               $arrayElemAt:["$images",0]
@@ -123,6 +136,8 @@ export async function POST(req, res) {
         },
       },
     ]);
+
+    // console.log("hello",cat)
 
     return NextResponse.json({ bag:bag[0], success: true }, { status: 200 });
   } catch (error) {
