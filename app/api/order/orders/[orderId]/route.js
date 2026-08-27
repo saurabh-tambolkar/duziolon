@@ -43,6 +43,17 @@ export async function GET(req, { params }) {
           as: "variant",
         },
       },
+        {
+        $lookup: {
+          from: "categories",
+          localField: "prod.category",
+          foreignField: "_id",
+          as: "cats",
+        },
+      },
+      {
+        $unwind: "$cats",
+      },
       {
         $unwind: "$variant",
       },
@@ -75,6 +86,7 @@ export async function GET(req, { params }) {
             name: "$prod.name",
             gender: "$prod.gender",
             description: "$prod.description",
+            category: "$cats.category",
             color: "$variant.color",
             price: "$size.price",
             image:{

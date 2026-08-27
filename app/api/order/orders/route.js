@@ -123,7 +123,7 @@ export async function POST(req, res) {
           deliveryDate: { $first: "$deliveryDate" },
           orderStatus: { $first: "$status" },
           paymentStatus: { $first: "$paymentStatus" },
-          time: { $first: "$updatedAt" },
+          time: { $first: "$createdAt" },
           address: {
       $first: {
         flat: "$address.flat",

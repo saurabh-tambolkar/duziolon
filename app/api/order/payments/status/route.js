@@ -27,12 +27,9 @@ export async function POST(req) {
 
        let cacheKey = `orders:${userId}`
        await redis.del(cacheKey)
-
-      console.log("user", user);
       let isOrderPresentWithTransId = await Order.findOne({
         transactionId: id,
       });
-      console.log("hello", isOrderPresentWithTransId);
       if (isOrderPresentWithTransId) {
         const merchantId = process.env.PHONEPE_MERCHANT_ID;
         const transactionId = id;

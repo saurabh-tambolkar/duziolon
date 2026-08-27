@@ -126,7 +126,7 @@ export default function Page() {
 
   return (
     <>
-      {loading && !data ? (
+      {loading ? (
         <div className="min-h-screen flex justify-center items-center">
           <Loader2 className="animate-spin" />
         </div>

@@ -36,6 +36,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import Link from "next/link";
 
 const ticketFormSchema = z.object({
   subject: z.string().min(1, { message: "Subject is required" }),
@@ -199,7 +200,7 @@ function page({ params }) {
                   key={index}
                   className="m-0 md:m-4 flex gap-2 md:gap-8 items-center"
                 >
-                  <div className="rounded-lg border shadow-sm w-40 flex justify-center items-center">
+                  <Link href={`/products/${item.product?.gender}/${item.product?.category}/${item.product?._id}`} className="rounded-lg border shadow-sm w-40 flex justify-center items-center">
                     <Image
                       alt="image"
                       src={item?.product?.image?.url}
@@ -207,7 +208,7 @@ function page({ params }) {
                       height={200}
                       className="rounded h-30 w-20 object-contain"
                     />
-                  </div>
+                  </Link>
                   <div className="w-full gap-4">
                     <div className="flex justify-between">
                       <h2 className="text-md font-bold w-2/3 truncate">

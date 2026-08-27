@@ -7,6 +7,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { apiClient } from "../../../../context/apiInstance";
 import { useUser } from "../../../../context/AuthContext";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 export default function OrderPlacedPage() {
   // const orderId = "ORD-87456321";
@@ -57,10 +58,21 @@ export default function OrderPlacedPage() {
     fetchStatus();
   }, [id, fetchStatus]);
 
+
   return (
-    <div className="min-h-screen pt-24  flex items-center justify-center p-5">
+    <div className="min-h-screen pt-24  flex items-center justify-center">
       {loading ? (
-        <Loader2 className="animate-spin" />
+        // <Loader2 className="animate-spin" />
+        <div className="max-h-[40vh] -mt-48 md:mt-0">
+        <DotLottieReact
+    rel="preload"
+    src="https://lottie.host/dd99fa24-061e-4cb9-9d8d-73b6d35456e7/BqDYU1raC3.lottie"
+    autoplay
+    loop={true}
+    className="w-full h-[30vh]"
+    // style={{ width: '100px', height: '100px' }}
+    />
+    </div>
       ) : error ? (
         <p className="font-bold text-red-500 text-lg">{error}</p>
       ) : (
