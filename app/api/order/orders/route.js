@@ -35,6 +35,11 @@ export async function POST(req, res) {
         } 
       },
       {
+  $sort: {
+    createdAt: -1
+  }
+},
+      {
         $unwind:"$items"
       },
       {
