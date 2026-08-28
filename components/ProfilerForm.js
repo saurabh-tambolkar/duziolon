@@ -9,6 +9,8 @@ import {
   Loader2,
   PlusIcon,
   Ticket,
+  CircleCheck,
+  CircleCheckBig,
 } from "lucide-react";
 import Image from "next/image";
 import noAddress from "../app/assets/noAddress.png";
@@ -25,6 +27,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -44,6 +47,7 @@ import {
 import { toast } from "sonner";
 import { stateInfo } from "../lib/stateDistrict";
 import Link from "next/link";
+import { useUser } from "@/app/context/AuthContext";
 
 function ProfilerForm({ activeForm }) {
   const getUserHeaderTitle = () => {
@@ -62,7 +66,7 @@ function ProfilerForm({ activeForm }) {
   const getUserSection = () => {
     switch (activeForm) {
       case "profile":
-        return "Personal Information";
+        return <Profile title={getUserHeaderTitle()}/>;
       case "address":
         return <Addresses title={getUserHeaderTitle()} />;
       case "tickets":
@@ -828,4 +832,114 @@ function Tickets({ title }) {
       )}
     </div>
   );
+}
+
+const formSchema=z.object({
+  email:z.email(),
+  name:z.string().min(2,"Name must be atleast 2 characters"),
+  phone:z.string().min(10, { message: 'Must be a valid mobile number' })
+      .max(10, { message: 'Must be a valid mobile number' }),
+})
+
+function Profile({title}){
+  const {currentUser,setCurrentUser} = useUser()
+
+  const [isSubmitting,setIsSubmitting] = useState(false)
+
+  const form = useForm({
+    resolver:zodResolver(formSchema),
+    defaultValues:{
+      email:currentUser.email,
+      phone:currentUser.phone,
+      name:currentUser.name,
+    }
+  })
+
+  const { isDirty } = form.formState;
+
+  async function onSubmit(values) {
+      try{
+        setIsSubmitting(true)
+        let response = await apiClient.put("/update-profile",values)
+        if(response.data.success){
+          let {name,phone} = response.data.userDetails
+          setCurrentUser((prev)=>{
+            return({...prev,name:name,phone:phone})
+          })
+          toast.success(response.data.message)
+        }
+      }
+      catch(err){
+        console.log(err)
+        toast.error(err?.response.data.message)
+      }
+      finally{
+        setIsSubmitting(false)
+      }
+    }
+
+  return(
+    <div>
+    <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold">{title}</h1>
+      </div>
+      <div className="mt-12 mx-auto w-full md:w-1/3">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="relative space-y-4">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({field})=>(
+                <FormItem>
+                  <FormLabel className="text-black">Email</FormLabel>
+                  <FormControl>
+                    <Input disabled={true} placeholder="Enter your email" {...field}/>
+                  </FormControl>
+                  {/* <FormDescription>You cant edit your email.</FormDescription> */}
+                  <CircleCheckBig className="absolute top-8 right-5 size-4 text-green-500" />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="name"
+              render={({field})=>(
+                <FormItem>
+                  <FormLabel className="text-black">Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter your name" {...field}/>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({field})=>(
+                <FormItem>
+                  <FormLabel className="text-black">Phone</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter phone number" {...field}/>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button type="submit" className="w-full bg-black hover:bg-gray-900 text-white" disabled={isSubmitting || !isDirty}>
+                      {isSubmitting ? (
+                        <>
+                          Please wait
+                          <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+                        </>
+                      ) : (
+                        'Update Profile'
+                      )}
+                    </Button>
+          </form>
+        </Form>
+        {/* <FormDescription/> */}
+      </div>
+    </div>
+  )
 }

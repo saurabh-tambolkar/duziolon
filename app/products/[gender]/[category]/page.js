@@ -1,6 +1,11 @@
 import Link from "next/link";
 import CardItem from "../../../../components/CardItem";
 import CatLabels from "../../../../components/CatLabels";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
+// import { useEffect, useState } from "react";
+import ProductSearchPage from "../../../../components/ProductSearchPage"
+// import useDebounce from "@/app/hooks/useDebounce";
 
 export const revalidate = 60; // cache for 60 seconds
 
@@ -16,21 +21,27 @@ const data = await res.json();
 });
 let catData = await resCat.json()
 
+ 
   return (
     <div className="min-h-screen pt-30 mx-auto w-11/12 ">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
       <h1 className='text-2xl text-black font-bold'>{gender.slice(0,1).toLocaleUpperCase()+gender.slice(1)} Fashion</h1>
+     
       <CatLabels categories={catData.categories}/>
       </div>
 
-    {
+      {
+        data && <ProductSearchPage data={data} gender={gender}/>
+      }
+
+    {/* {
       data?.products?.length == 0 && <p className="text-center mt-40">No products found!</p>
     }
       <div className='mt-12 grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-8'>
         {data.products?.map((item) => (
           <CardItem key={item._id} product={item} />
         ))}
-      </div>
+      </div> */}
     </div>
   );
 }

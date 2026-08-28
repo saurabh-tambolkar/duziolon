@@ -47,7 +47,7 @@ function page() {
   return (
     <div className='min-h-screen w-full pt-12'>
       <h1 className="text-xl font-semibold mb-4 ml-4">Ticket Resolution</h1>
-     <div className="min-h-screen flex px-4 flex-col md:flex-row w-full gap-2">
+     <div className="min-h-screen flex px-4 flex-col md:flex-row w-full gap-2 pb-24 md:pb-0">
       {loading ? (
         <Loader2 className="animate-spin size-4" />
       ) : (

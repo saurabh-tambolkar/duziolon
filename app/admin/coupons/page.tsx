@@ -79,7 +79,7 @@ export type Category = {
 
 /* ================= TABLE COLUMNS ================= */
 
-export const columns: ColumnDef<Category>[] = [
+const columns: ColumnDef<Category>[] = [
   {
     accessorKey: "name",
     header: "Coupon Code",

@@ -57,7 +57,7 @@ export async function GET(req, { params }) {
       email: verifiedUser.email,
       name: verifiedUser.name,
       role: verifiedUser.role,
-      mobileNumber: verifiedUser.mobileNumber,
+      phone: verifiedUser.phone,
       profileImage: verifiedUser.profileImage,
     };
 

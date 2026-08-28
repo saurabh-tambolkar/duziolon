@@ -158,7 +158,7 @@ function Navbar() {
         } h-auto w-full md:hidden`}
       >
         <div className="flex flex-col items-center space-y-4 py-6">
-          {navOptionsMobile.map((item) => {
+          {(currentUser.role === "Admin" ? optionsProfAdmin : navOptionsMobile).map((item) => {
           let href =item.path;
           // href = href.replace("/","")
 
@@ -185,7 +185,10 @@ function Navbar() {
           >
             Accessories
           </Link> */}
-          {currentUser ? (
+          {currentUser  ? (
+            <>
+            {
+              currentUser.role !== "Admin" &&
             <div className="flex flex-col items-center gap-2">
               <Link href={"/wishlist"}   onClick={() => setMenuIsOpen(false)}>
               <p>Wishlist</p>
@@ -200,6 +203,8 @@ function Navbar() {
               <Link className="mt-4" href={"/profile"}   onClick={() => setMenuIsOpen(false)}>
                 <User size={24} />
               </Link>
+            </div>
+            }
               <Button
                 className="bg-red-500 font-bold hover:bg-red-400 mt-4"
                 onClick={() => {
@@ -209,7 +214,7 @@ function Navbar() {
               >
                 Logout
               </Button>
-            </div>
+            </>
           ) : (
             <Button className="block"   onClick={() => setMenuIsOpen(false)}>
               <Link href={"/sign-in"}>Sign In</Link>

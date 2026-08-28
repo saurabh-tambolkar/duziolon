@@ -166,7 +166,7 @@ export default function Page() {
             Total Users: {users.length}
           </h1>
         </div>
-        <div className="w-1/3 relative">
+        <div className="w-2/3 md:w-1/3 relative">
 
         <Input
           className="w-full"

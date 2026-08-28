@@ -173,6 +173,7 @@ export default function Page() {
                   </h1>
 
                   {/* ⭐⭐⭐⭐⭐ Rating */}
+                  <div className="flex justify-between my-4">
                   <div className="flex mb-4">
                     <span className="flex items-center">
                       {[1, 2, 3, 4].map((i) => (
@@ -205,6 +206,26 @@ export default function Page() {
 
                       <span className="text-gray-600 ml-3">4 Reviews</span>
                     </span>
+                  </div>
+                        <div className="block md:hidden">
+                    {
+                      !currentUser && currentUser?.role !== "User"
+                      ?
+                      null
+                      :
+                    wishlisting ?
+                    <Loader2 className="animate-spin"/>
+                    :
+                     wishlisted ? (
+                      <FontAwesomeIcon
+                        icon={faHeart}
+                        className="text-red-500 text-2xl"
+                        onClick={removewishlistProduct}
+                      />
+                    ) : (
+                      <Heart className="text-black" onClick={wishlistProduct} />
+                    )}
+                    </div>
                   </div>
 
                   {/* <p className="leading-relaxed">Fam locavore kickstarter distillery. Mixtape chillwave tumeric sriracha taximy chia microdosing tilde DIY. XOXO fam indxgo juiceramps cornhole raw denim forage brooklyn. Everyday carry +1 seitan poutine tumeric. Gastropub blue bottle austin listicle pour-over, neutra jean shorts keytar banjo tattooed umami cardigan.</p> */}
@@ -264,6 +285,7 @@ export default function Page() {
                     >
                       {selectedSize?.stock} items left!
                     </p>
+                    <div className="hidden md:block">
                     {
                       !currentUser && currentUser?.role !== "User"
                       ?
@@ -281,6 +303,7 @@ export default function Page() {
                     ) : (
                       <Heart className="text-black" onClick={wishlistProduct} />
                     )}
+                    </div>
                   </div>
 
                   {/* Price + Buttons */}

@@ -55,7 +55,6 @@ export async function POST(req,res) {
                 phone:existingUser.phone,
                 role:existingUser.role,
             }
-
             return NextResponse.json({message:"Login successfull",userDetails,accessToken,refreshToken,success:true},{status:200})
         }
     } catch (error) {

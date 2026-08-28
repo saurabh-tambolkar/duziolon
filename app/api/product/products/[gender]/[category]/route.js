@@ -45,53 +45,53 @@
 // },
 
 //       // 🔥 JOIN SIZES
-      // {
-      //   $lookup: {
-      //     from: "sizes",
-      //     localField: "_id",
-      //     foreignField: "productId",
-      //     as: "sizes",
-      //   },
-      // },
+// {
+//   $lookup: {
+//     from: "sizes",
+//     localField: "_id",
+//     foreignField: "productId",
+//     as: "sizes",
+//   },
+// },
 
-      // // 🔥 JOIN IMAGES BASED ON MATCHING productId
-      // {
-      //   $lookup: {
-      //     from: "images",
-      //     localField: "_id",
-      //     foreignField: "productId",
-      //     as: "allImages",
-      //   },
-      // },
+// // 🔥 JOIN IMAGES BASED ON MATCHING productId
+// {
+//   $lookup: {
+//     from: "images",
+//     localField: "_id",
+//     foreignField: "productId",
+//     as: "allImages",
+//   },
+// },
 
 //       // 🔥 MERGE images INTO each variant using variantId
-      // {
-      //   $addFields: {
-      //     variants: {
-      //       $map: {
-      //         input: "$variants",
-      //         as: "variant",
-      //         in: {
-      //           $mergeObjects: [
-      //             "$$variant",
-      //             {
-      //               images: {
-      //                 $filter: {
-      //                   input: "$allImages",
-      //                   as: "img",
-      //                   cond: { $eq: ["$$img.variantId", "$$variant._id"] },
-      //                 },
-      //               },
-      //             },
-      //           ],
-      //         },
-      //       },
-      //     },
-      //   },
-      // },
+// {
+//   $addFields: {
+//     variants: {
+//       $map: {
+//         input: "$variants",
+//         as: "variant",
+//         in: {
+//           $mergeObjects: [
+//             "$$variant",
+//             {
+//               images: {
+//                 $filter: {
+//                   input: "$allImages",
+//                   as: "img",
+//                   cond: { $eq: ["$$img.variantId", "$$variant._id"] },
+//                 },
+//               },
+//             },
+//           ],
+//         },
+//       },
+//     },
+//   },
+// },
 
-      // // cleanup temporary field
-      // { $project: { allImages: 0 } },
+// // cleanup temporary field
+// { $project: { allImages: 0 } },
 //     ]);
 
 //     return NextResponse.json(
@@ -120,120 +120,118 @@ import { NextResponse } from "next/server";
 import Product from "../../../../../models/ProductModel";
 import ConnectDb from "../../../../../db/ConnectDb";
 import mongoose from "mongoose";
-import redis from "../../../../../../lib/redis"
+import redis from "../../../../../../lib/redis";
 
 export async function GET(req, { params }) {
   try {
     await ConnectDb();
     // console.log("api called here ")
 
-    const { gender,category } = await params;
+    const { gender, category } = await params;
 
     const cacheKey = `products:${gender}:${category}`;
 
     let cachedProducts = await redis.get(cacheKey);
-    cachedProducts = JSON.parse(cachedProducts)
+    cachedProducts = JSON.parse(cachedProducts);
 
-    if(cachedProducts){
-      console.log("sending from redis",cachedProducts.length)
-       return NextResponse.json(
-      {
-        message: "Products fetched successfully",
-        products:cachedProducts,
-        gender,
-        totalProducts: cachedProducts.length,
-        success: true,
-        source:"Redis"
-      },
-      { status: 200 }
-    );
+    if (cachedProducts) {
+      console.log("sending from redis", cachedProducts.length);
+      return NextResponse.json(
+        {
+          message: "Products fetched successfully",
+          products: cachedProducts,
+          gender,
+          totalProducts: cachedProducts.length,
+          success: true,
+          source: "Redis",
+        },
+        { status: 200 },
+      );
     }
 
     console.log("Redis Cache MISS:", cacheKey);
 
-    console.log(gender,category)
+    console.log(gender, category);
     const match = {
       gender,
-    };  
-    if(category !== "all"){
+    };
+    if (category !== "all") {
       match.category = new mongoose.Types.ObjectId(category);
     }
-    console.log(match)
-
- 
+    console.log(match);
 
     let products = await Product.aggregate([
       {
         $match: match,
       },
       {
-        $lookup:{
-          from:'categories',
-          localField:'category',
-          foreignField:'_id',
-          as:"category"
+        $lookup: {
+          from: "categories",
+          localField: "category",
+          foreignField: "_id",
+          as: "category",
         },
       },
       {
-        $unwind:"$category"
+        $unwind: "$category",
       },
       {
-  $project: {
-    name: 1,
-    description: 1,
-    gender: 1,
-    image: 1,
-    sizes: 1,
-    colors: 1,
-    // 👇 only keep the category field (remove everything else)
-    category: "$category.category"
-  }
-},
+        $project: {
+          name: 1,
+          description: 1,
+          gender: 1,
+          image: 1,
+          sizes: 1,
+          colors: 1,
+          // 👇 only keep the category field (remove everything else)
+          category: "$category.category",
+        },
+      },
       {
-        $lookup:{
-          from:"sizes",
-          let:{productId:'$_id'},
-          pipeline:[
+        $lookup: {
+          from: "sizes",
+          let: { productId: "$_id" },
+          pipeline: [
             {
-              $match:{
-                $expr:{$eq:["$productId","$$productId"]}
-              }
+              $match: {
+                $expr: { $eq: ["$productId", "$$productId"] },
+              },
             },
             {
-              $project:{
-                _id:0,
-                size:1,
-                price:1
-              }
+              $project: {
+                _id: 0,
+                size: 1,
+                price: 1,
+              },
             },
-             { $limit: 1 }
+            { $limit: 1 },
           ],
-          as:"sizes"
-        }
+          as: "sizes",
+        },
       },
       {
-        $lookup:{
-          from:"images",
-          let:{productId:"$_id"},
-          pipeline:[
+        $lookup: {
+          from: "images",
+          let: { productId: "$_id" },
+          pipeline: [
             {
-              $match:{
-                $expr:{$eq:['$productId',"$$productId"]}
-              }
+              $match: {
+                $expr: { $eq: ["$productId", "$$productId"] },
+              },
             },
             {
-              $project:{
-                _id:0,
-                url:1
-              }
+              $project: {
+                _id: 0,
+                url: 1,
+              },
             },
-            {$limit:1}
+            { $limit: 1 },
           ],
-          as:"image"
-        }
+          as: "image",
+        },
       },
       {
-        $unwind:"$image"
+        $unwind: "$image",
       },
       {
         $lookup: {
@@ -257,12 +255,7 @@ export async function GET(req, { params }) {
       },
     ]);
 
-    await redis.set(
-      cacheKey,
-      JSON.stringify(products),
-      "EX",
-      300
-    )
+    await redis.set(cacheKey, JSON.stringify(products), "EX", 300);
 
     return NextResponse.json(
       {
@@ -271,9 +264,9 @@ export async function GET(req, { params }) {
         gender,
         totalProducts: products.length,
         success: true,
-        source:"MongoDb"
+        source: "MongoDb",
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.log(error);
@@ -283,7 +276,7 @@ export async function GET(req, { params }) {
         error: error.message,
         success: false,
       },
-      { status: 400 }
+      { status: 400 },
     );
   }
 }
