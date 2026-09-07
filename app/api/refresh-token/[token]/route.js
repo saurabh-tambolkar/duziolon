@@ -6,61 +6,119 @@ import User from "../../../models/UserModel";
 export async function GET(req, { params }) {
   try {
     await ConnectDb();
-    let { token } = await params;
+
+    const { token } = await params;
 
     if (!token) {
       return NextResponse.json(
-        { message: "No token provided", success: false },
+        {
+          message: "No refresh token provided",
+          success: false,
+        },
         { status: 400 }
       );
     }
 
-    const jwtSecretKey = process.env.JWTSECRETKEY;
-    let decoded;
-    try {
-      decoded = jwt.verify(token, jwtSecretKey);
-    } catch (error) {
+    const refreshSecret = process.env.JWTSECRETKEY;
+
+    if (!refreshSecret) {
       return NextResponse.json(
-        { message: "Invalid or expired token", success: false },
+        {
+          message: "Refresh token secret is not configured",
+          success: false,
+        },
+        { status: 500 }
+      );
+    }
+
+    let decoded;
+
+    try {
+      decoded = jwt.verify(token, refreshSecret);
+
+      console.log("Decoded refresh token:", decoded);
+    } catch (error) {
+      if (error.name === "TokenExpiredError") {
+        return NextResponse.json(
+          {
+            message: "Refresh token has expired. Please login again.",
+            success: false,
+          },
+          { status: 401 }
+        );
+      }
+
+      return NextResponse.json(
+        {
+          message: "Invalid refresh token",
+          success: false,
+        },
         { status: 401 }
       );
     }
-    let id = decoded.user.id;
+
+    const id = decoded.user?.id;
+
+    if (!id) {
+      return NextResponse.json(
+        {
+          message: "Invalid refresh token payload",
+          success: false,
+        },
+        { status: 401 }
+      );
+    }
+
     const verifiedUser = await User.findById(id);
+
     if (!verifiedUser) {
       return NextResponse.json(
-        { message: "User not found", success: false },
+        {
+          message: "User not found",
+          success: false,
+        },
         { status: 404 }
       );
     }
-     const data = {
-          user: { id: id },
-        };
-        const accessToken = jwt.sign(data, jwtSecretKey, {
-          expiresIn: "24h",
-        });
-    
-        const userDetails = {
-          _id: verifiedUser._id,
-          email: verifiedUser.email,
-          mobileNumber: verifiedUser.mobileNumber,
-          profileImage: verifiedUser.profileImage,
-        };
-    
-        return NextResponse.json(
-          {
-            message: "Token has been refreshed successfully",
-            accessToken,
-            userDetails,
-            success: true,
-          },
-          { status: 200 }
-        );
-  } catch (error) {
-    console.log(error)
+
+    // Generate NEW access token
+    const accessToken = jwt.sign(
+      {
+        user: {
+          id: verifiedUser._id,
+        },
+      },
+      process.env.JWTSECRETKEY,
+      {
+        expiresIn: "15m",
+      }
+    );
+
+    const userDetails = {
+      _id: verifiedUser._id,
+      email: verifiedUser.email,
+      phone: verifiedUser.phone,
+      role: verifiedUser.role,
+    };
+
     return NextResponse.json(
-      { message: "Cant refresh token now", success: false },
-      { status: 400 }
+      {
+        message: "Token has been refreshed successfully",
+        accessToken,
+        userDetails,
+        success: true,
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Refresh token error:", error);
+
+    return NextResponse.json(
+      {
+        message: "Can't refresh token now",
+        success: false,
+      },
+      { status: 500 }
     );
   }
 }

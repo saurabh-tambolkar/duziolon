@@ -24,10 +24,11 @@ export async function GET(req, { params }) {
     try {
       // This throws an error if token is expired or invalid
       decoded = jwt.verify(token, jwtSecretKey);
-      // console.log(decoded);
+      // console.log("hello",decoded);
     } catch (err) {
+      console.log(err)
       return NextResponse.json(
-        { message: "Invalid or expired token", success: false },
+        { message: "Invalid or expired token", success: false,err },
         { status: 401 }
       );
     }

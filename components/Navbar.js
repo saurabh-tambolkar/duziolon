@@ -158,7 +158,7 @@ function Navbar() {
         } h-auto w-full md:hidden`}
       >
         <div className="flex flex-col items-center space-y-4 py-6">
-          {(currentUser.role === "Admin" ? optionsProfAdmin : navOptionsMobile).map((item) => {
+          {(currentUser?.role === "Admin" ? optionsProfAdmin : navOptionsMobile).map((item) => {
           let href =item.path;
           // href = href.replace("/","")
 

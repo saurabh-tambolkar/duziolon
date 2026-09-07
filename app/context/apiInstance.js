@@ -29,15 +29,21 @@ apiClient.interceptors.response.use(function(response){
 },function (error){
 
     const originalRequest = error.config;
+    console.log("hello user api")
 
     if (error.response?.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true
 
         return (async()=>{
             try{
+                console.log("hello api")
                 const refreshToken=localStorage.getItem('duziolonRefreshToken')
-                const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/refresh-token/${refreshToken}`);
-                console.log(data)
+                console.log("token is ",refreshToken)
+                const {data } = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/refresh-token/${refreshToken}`);
+                // if(!success){
+                //     console.log("Refresh token failed");
+                // }
+                console.log("data",data)
                 document.cookie=`duziolon=${data.accessToken}; max-age=${60*60}; Path=/; Secure; SameSite=Strict;`
                 
                 // Retry the original request with the new token
@@ -46,6 +52,11 @@ apiClient.interceptors.response.use(function(response){
             }
             catch (refreshError) {
                 console.error('Token refresh failed:', refreshError);
+                document.cookie =
+        "duziolon=; Max-Age=0; Path=/; SameSite=Strict";
+                // setCurrentUser(null);
+                localStorage.removeItem('duziolonRefreshToken');
+                // Handle logout or redirect to login page
                 
                 //Handle logout or redirect to login page
                             

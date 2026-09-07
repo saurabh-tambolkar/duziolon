@@ -9,6 +9,7 @@ import { getCookie } from "@/lib/getCookie";
 import Image from "next/image";
 import mainImg from "../assets/mainImage.png";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+import apiClient from "./apiInstance";
 
 const UserContext = createContext();
 
@@ -99,7 +100,7 @@ export function UserProvider({ children }) {
   const refreshTokenFn = async (token) => {
     try {
       setLoadingAuth(true);
-      const response = await axios.get(
+      const response = await apiClient.get(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/verify-token/${token}`,
       );
 
